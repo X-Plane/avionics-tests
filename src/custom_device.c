@@ -308,6 +308,7 @@ void custom_device_init()
 		.bezelHeight = DEV_HEIGHT,
 		.screenOffsetX = BEZEL_SIZE,
 		.screenOffsetY = BEZEL_SIZE,
+        .drawEveryFrame = true,
 		.bezelDrawCallback = custom_bezel,
 		.drawCallback = custom_screen,
 		.screenTouchCallback = custom_screen_click,

@@ -551,6 +551,9 @@ TYPE
      screenOffsetX            : Integer;
      { The screen's vertical offset into the bezel for 2D pop-ups.                }
      screenOffsetY            : Integer;
+     { Whether X-Plane should call you to re-draw your device's screen every      }
+     { frame, or only when you call XPLMAvionicsNeedsDrawing().                   }
+     drawEveryFrame           : Integer;
      { The draw callback you will use to draw the 2D-popup bezel.                 }
      bezelDrawCallback        : XPLMAvionicsCallback_f;
      { The draw callback you will be using to draw into the framebuffer.          }
@@ -641,6 +644,18 @@ TYPE
                                         inID                : XPLMAvionicsID;
                                         outX                : PInteger;    { Can be nil }
                                         outY                : PInteger) : Integer;    { Can be nil }
+    cdecl; external XPLM_DLL;
+
+   {
+    XPLMAvionicsNeedsDrawing
+    
+    Tells X-Plane that your device's screen needs to be re-drawn. If your
+    device is marked for on-demand drawing, X-Plane will call your screen
+    drawing callback before drawing the next simulator frame. If your device is
+    already drawn every frame, this has no effect.
+   }
+   PROCEDURE XPLMAvionicsNeedsDrawing(
+                                        inID                : XPLMAvionicsID);
     cdecl; external XPLM_DLL;
 
    {
