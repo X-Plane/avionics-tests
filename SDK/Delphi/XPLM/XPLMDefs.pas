@@ -444,6 +444,30 @@ TYPE
      buffer[150]              : XPLMChar;
    END;
    PXPLMFixedString150_t = ^XPLMFixedString150_t;
+{$IFDEF XPLM200}
+   {
+    XPLMCursorStatus
+    
+    XPLMCursorStatus describes how you would like X-Plane to manage the cursor.
+    See XPLMHandleCursor_f for more info.
+   }
+TYPE
+   XPLMCursorStatus = (
+     { X-Plane manages the cursor normally, plugin does not affect the cusrsor.   }
+      xplm_CursorDefault                       = 0
+ 
+     { X-Plane hides the cursor.                                                  }
+     ,xplm_CursorHidden                        = 1
+ 
+     { X-Plane shows the cursor as the default arrow.                             }
+     ,xplm_CursorArrow                         = 2
+ 
+     { X-Plane shows the cursor but lets you select an OS cursor.                 }
+     ,xplm_CursorCustom                        = 3
+ 
+   );
+   PXPLMCursorStatus = ^XPLMCursorStatus;
+{$ENDIF XPLM200}
 
 IMPLEMENTATION
 

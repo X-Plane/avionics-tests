@@ -72,6 +72,8 @@ enum {
 
     xplm_Nav_LatLon                          = 2048,
 
+    xplm_Nav_TACAN                           = 4096,
+
 
 };
 typedef int XPLMNavType;

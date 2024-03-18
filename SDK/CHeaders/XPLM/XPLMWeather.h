@@ -108,10 +108,12 @@ typedef struct {
 /*
  * XPLMGetMETARForAirport
  * 
- * Get the last known METAR report for an airport by ICAO code. Note that the
- * actual weather at that airport may have evolved significantly since the
+ * Get the last-downloaded METAR report for an airport by ICAO code. Note that
+ * the actual weather at that airport may have evolved significantly since the
  * last downloaded METAR. outMETAR must point to a char buffer of at least 150
- * characters. This call is not intended to be used per-frame.
+ * characters. This call is not intended to be used per-frame. This call does
+ * not return the current weather at the airport, and returns an empty string
+ * if the system is not in real-weather mode.
  *
  */
 XPLM_API void       XPLMGetMETARForAirport(
@@ -125,8 +127,9 @@ XPLM_API void       XPLMGetMETARForAirport(
  * 
  * Get the current weather conditions at a given location. Note that this does
  * not work world-wide, only within the surrounding region. Return 1 if
- * detailed weather was found, 0 if not. This call is not intended to be used
- * per-frame.
+ * detailed weather (i.e. an airport-specific METAR) was found, 0 if not. In
+ * both cases, the structure will contain the best data available. This call
+ * is not intended to be used per-frame.
  *
  */
 XPLM_API int        XPLMGetWeatherAtLocation(

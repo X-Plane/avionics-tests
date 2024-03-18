@@ -374,7 +374,8 @@ TYPE
     Mouse click callback for clicks into your screen or (2D-popup) bezel,
     useful if the device you are making simulates a touch-screen the user can
     click in the 3d cockpit, or if your pop-up's bezel has buttons that the
-    user can click.
+    user can click. Return 1 to consume the event, or 0 to let X-Plane process
+    it (for stock avionics devices).
    }
      XPLMAvionicsMouse_f = FUNCTION(
                                     inID                : XPLMDeviceID;
@@ -384,10 +385,39 @@ TYPE
                                     inRefcon            : pointer) : Integer; cdecl;
 
    {
+    XPLMAvionicsMouseWheel_f
+    
+    Mouse wheel callback for scroll actions into your screen or (2D-popup)
+    bezel, useful if your bezel has knobs that can be turned using the mouse
+    wheel, or if you want to simulate pinch-to-zoom on a touchscreen. Return 1
+    to consume the event, or 0 to let X-Plane process it (for stock avionics
+    devices). The number of “clicks” indicates how far the wheel was turned
+    since the last callback. The wheel is 0 for the vertical axis or 1 for the
+    horizontal axis (for OS/mouse combinations that support this).
+   }
+     XPLMAvionicsMouseWheel_f = FUNCTION(
+                                    inID                : XPLMDeviceID;
+                                    x                   : Integer;
+                                    y                   : Integer;
+                                    wheel               : Integer;
+                                    clicks              : Integer;
+                                    inRefcon            : pointer) : Integer; cdecl;
+
+   {
+    XPLMAvionicsCursor_f
+   }
+     XPLMAvionicsCursor_f = FUNCTION(
+                                    inID                : XPLMDeviceID;
+                                    x                   : Integer;
+                                    y                   : Integer;
+                                    inRefcon            : pointer) : Integer; cdecl;
+
+   {
     XPLMAvionicsKeyboard_f
     
     Key callback called when your device is popped up and you've requested to
-    capture the keyboard.
+    capture the keyboard.  Return 1 to consume the event, or 0 to let X-Plane
+    process it (for stock avionics devices).
    }
      XPLMAvionicsKeyboard_f = FUNCTION(
                                     inID                : XPLMDeviceID;
@@ -428,10 +458,28 @@ TYPE
      drawCallbackAfter        : XPLMAvionicsCallback_f;
      { The mouse click callback that is called when the user clicks onto your     }
      { bezel.                                                                     }
-     bezelCallback            : XPLMAvionicsMouse_f;
+     bezelClickCallback       : XPLMAvionicsMouse_f;
+     { The mouse click callback that is called when the user clicks onto your     }
+     { bezel.                                                                     }
+     bezelRightClickCallback  : XPLMAvionicsMouse_f;
+     { The callback that is called when the users uses the scroll wheel over your }
+     { avionics' bezel.                                                           }
+     bezelScrollCallback      : XPLMAvionicsMouseWheel_f;
+     { The callback that lets you determine what cursor should be shown when the  }
+     { mouse is over your device's bezel.                                         }
+     bezelCursorCallback      : XPLMAvionicsCursor_f;
      { The mouse click callback that is called when the user clicks onto your     }
      { screen.                                                                    }
-     touchScreenCallback      : XPLMAvionicsMouse_f;
+     screenTouchCallback      : XPLMAvionicsMouse_f;
+     { The right mouse click callback that is called when the user clicks onto    }
+     { your screen.                                                               }
+     screenRightTouchCallback : XPLMAvionicsMouse_f;
+     { The callback that is called when the users uses the scroll wheel over your }
+     { avionics' screen.                                                          }
+     screenScrollCallback     : XPLMAvionicsMouseWheel_f;
+     { The callback that lets you determine what cursor should be shown when the  }
+     { mouse is over your device's screen.                                        }
+     screenCursorCallback     : XPLMAvionicsCursor_f;
      { The key callback that is called when the user types in your popup.         }
      keyboardCallback         : XPLMAvionicsKeyboard_f;
      { A reference which will be passed into each of your draw callbacks. Use this}
@@ -509,10 +557,28 @@ TYPE
      drawCallback             : XPLMAvionicsCallback_f;
      { The mouse click callback that is called when the user clicks onto your     }
      { bezel.                                                                     }
-     bezelCallback            : XPLMAvionicsMouse_f;
+     bezelClickCallback       : XPLMAvionicsMouse_f;
+     { The mouse click callback that is called when the user clicks onto your     }
+     { bezel.                                                                     }
+     bezelRightClickCallback  : XPLMAvionicsMouse_f;
+     { The callback that is called when the users uses the scroll wheel over your }
+     { avionics' bezel.                                                           }
+     bezelScrollCallback      : XPLMAvionicsMouseWheel_f;
+     { The callback that lets you determine what cursor should be shown when the  }
+     { mouse is over your device's bezel.                                         }
+     bezelCursorCallback      : XPLMAvionicsCursor_f;
      { The mouse click callback that is called when the user clicks onto your     }
      { screen.                                                                    }
-     touchScreenCallback      : XPLMAvionicsMouse_f;
+     screenTouchCallback      : XPLMAvionicsMouse_f;
+     { The right mouse click callback that is called when the user clicks onto    }
+     { your screen.                                                               }
+     screenRightTouchCallback : XPLMAvionicsMouse_f;
+     { The callback that is called when the users uses the scroll wheel over your }
+     { avionics' screen.                                                          }
+     screenScrollCallback     : XPLMAvionicsMouseWheel_f;
+     { The callback that lets you determine what cursor should be shown when the  }
+     { mouse is over your device's screen.                                        }
+     screenCursorCallback     : XPLMAvionicsCursor_f;
      { The key callback that is called when the user types in your popup.         }
      keyboardCallback         : XPLMAvionicsKeyboard_f;
      { null-terminated string of maximum 64 characters to uniquely identify your  }
@@ -520,6 +586,9 @@ TYPE
      { when you call XPLMCreateAvionicsEx, so you don't need to hold this string  }
      { in memory after you called XPLMCreateAvionicsEx.                           }
      deviceID                 : XPLMString;
+     { A null-terminated string to give a user-readable name to your device, which}
+     { can be presented in UI dialogs.                                            }
+     deviceName               : XPLMString;
      { A reference which will be passed into your draw and mouse callbacks. Use   }
      { this to pass information to yourself as needed.                            }
      refcon                   : pointer;
@@ -558,6 +627,20 @@ TYPE
    }
    FUNCTION XPLMIsAvionicsBound(
                                         inID                : XPLMAvionicsID) : Integer;
+    cdecl; external XPLM_DLL;
+
+   {
+    XPLMIsCursorOverAvionics
+    
+    Returns true (1) if the mouse is currently over the screen of cockpit
+    device with the given ID. If they are not NULL, the optional x and y
+    arguments are filled with the co-ordinates of the mouse cursor in device
+    co-ordinates.
+   }
+   FUNCTION XPLMIsCursorOverAvionics(
+                                        inID                : XPLMAvionicsID;
+                                        outX                : PInteger;    { Can be nil }
+                                        outY                : PInteger) : Integer;    { Can be nil }
     cdecl; external XPLM_DLL;
 
    {
@@ -822,31 +905,6 @@ TYPE
 
 {$IFDEF XPLM200}
    {
-    XPLMCursorStatus
-    
-    XPLMCursorStatus describes how you would like X-Plane to manage the cursor.
-    See XPLMHandleCursor_f for more info.
-   }
-TYPE
-   XPLMCursorStatus = (
-     { X-Plane manages the cursor normally, plugin does not affect the cusrsor.   }
-      xplm_CursorDefault                       = 0
- 
-     { X-Plane hides the cursor.                                                  }
-     ,xplm_CursorHidden                        = 1
- 
-     { X-Plane shows the cursor as the default arrow.                             }
-     ,xplm_CursorArrow                         = 2
- 
-     { X-Plane shows the cursor but lets you select an OS cursor.                 }
-     ,xplm_CursorCustom                        = 3
- 
-   );
-   PXPLMCursorStatus = ^XPLMCursorStatus;
-{$ENDIF XPLM200}
-
-{$IFDEF XPLM200}
-   {
     XPLMHandleCursor_f
     
     The SDK calls your cursor status callback when the mouse is over your
@@ -875,6 +933,7 @@ TYPE
     left of the global desktop space. In both cases, x increases as you move
     right, and y increases as you move up.
    }
+TYPE
      XPLMHandleCursor_f = FUNCTION(
                                     inWindowID          : XPLMWindowID;
                                     x                   : Integer;

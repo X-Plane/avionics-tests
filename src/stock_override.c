@@ -78,6 +78,13 @@ static int stock_bezel_click(XPLMDeviceID id, int x, int y, int mouse, void *ref
 	return 0;
 }
 
+static int stock_bezel_scroll(XPLMDeviceID id, int x, int y, int wheel, int clicks, void *refcon)
+{
+    log_msg("%s: bezel scroll %d (%d) at (%d, %d)", device_str[id], wheel, clicks, x, y);
+    
+    return 0;
+}
+
 static int stock_screen_click(XPLMDeviceID id, int x, int y, XPLMMouseStatus mouse, void *refcon)
 {
 	log_msg("%s: screen touch %s at (%d, %d)", device_str[id], click_type(mouse), x, y);
@@ -91,6 +98,13 @@ static int stock_screen_click(XPLMDeviceID id, int x, int y, XPLMMouseStatus mou
 	// Return 1 if you want to intercept the screen touch. To keep receiving drags, you must
 	// keep returning 1.
 	return mouse != xplm_MouseUp;
+}
+
+static XPLMCursorStatus stock_screen_cursor(XPLMDeviceID id, int x, int y, void *refcon) {
+    log_msg("%s: screen cursor at (%d, %d)", device_str[id], x, y);
+    bool in_rect = x > 50 && x < 100 && y > 50 && y < 100;
+    
+    return in_rect ? xplm_CursorHidden : xplm_CursorDefault;
 }
 
 static int stock_draw(XPLMDeviceID id, int before, void *refcon)
@@ -134,8 +148,10 @@ static XPLMAvionicsID register_device(XPLMDeviceID id, XPLMAvionicsCallback_f dr
 		.deviceId = id,
 		.drawCallbackBefore = draw,
 		.drawCallbackAfter = draw,
-		.bezelCallback = stock_bezel_click,
-		.touchScreenCallback = stock_screen_click,
+		.bezelClickCallback = stock_bezel_click,
+        .bezelScrollCallback = stock_bezel_scroll,
+		.screenTouchCallback = stock_screen_click,
+        .screenCursorCallback = stock_screen_cursor,
 		.keyboardCallback = stock_keyboard,
 		.refcon = NULL
 	};
@@ -143,12 +159,10 @@ static XPLMAvionicsID register_device(XPLMDeviceID id, XPLMAvionicsCallback_f dr
 	char debug_str[128];
 	if(draw)
 	{
-		snprintf(debug_str, sizeof(debug_str), "Drawing overrides for stock device %s", device_str[id]);
+        log_msg("Drawing overrides for stock device %s", device_str[id]);
 	} else {
-		snprintf(debug_str, sizeof(debug_str), "Non-drawing overrides for stock device %s", device_str[id]);
+		log_msg("Non-drawing overrides for stock device %s", device_str[id]);
 	}
-	
-	XPLMSpeakString(debug_str);
 	return XPLMRegisterAvionicsCallbacksEx(&av);
 }
 

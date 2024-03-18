@@ -389,7 +389,8 @@ typedef int (* XPLMAvionicsCallback_f)(
  * Mouse click callback for clicks into your screen or (2D-popup) bezel,
  * useful if the device you are making simulates a touch-screen the user can
  * click in the 3d cockpit, or if your pop-up's bezel has buttons that the
- * user can click.
+ * user can click. Return 1 to consume the event, or 0 to let X-Plane process
+ * it (for stock avionics devices).
  *
  */
 typedef int (* XPLMAvionicsMouse_f)(
@@ -400,10 +401,41 @@ typedef int (* XPLMAvionicsMouse_f)(
                          void *               inRefcon);
 
 /*
+ * XPLMAvionicsMouseWheel_f
+ * 
+ * Mouse wheel callback for scroll actions into your screen or (2D-popup)
+ * bezel, useful if your bezel has knobs that can be turned using the mouse
+ * wheel, or if you want to simulate pinch-to-zoom on a touchscreen. Return 1
+ * to consume the event, or 0 to let X-Plane process it (for stock avionics
+ * devices). The number of “clicks” indicates how far the wheel was turned
+ * since the last callback. The wheel is 0 for the vertical axis or 1 for the
+ * horizontal axis (for OS/mouse combinations that support this).
+ *
+ */
+typedef int (* XPLMAvionicsMouseWheel_f)(
+                         XPLMDeviceID         inID,
+                         int                  x,
+                         int                  y,
+                         int                  wheel,
+                         int                  clicks,
+                         void *               inRefcon);
+
+/*
+ * XPLMAvionicsCursor_f
+ *
+ */
+typedef int (* XPLMAvionicsCursor_f)(
+                         XPLMDeviceID         inID,
+                         int                  x,
+                         int                  y,
+                         void *               inRefcon);
+
+/*
  * XPLMAvionicsKeyboard_f
  * 
  * Key callback called when your device is popped up and you've requested to
- * capture the keyboard.
+ * capture the keyboard.  Return 1 to consume the event, or 0 to let X-Plane
+ * process it (for stock avionics devices).
  *
  */
 typedef int (* XPLMAvionicsKeyboard_f)(
@@ -446,10 +478,28 @@ typedef struct {
      XPLMAvionicsCallback_f    drawCallbackAfter;
     /* The mouse click callback that is called when the user clicks onto your     *
      * bezel.                                                                     */
-     XPLMAvionicsMouse_f       bezelCallback;
+     XPLMAvionicsMouse_f       bezelClickCallback;
+    /* The mouse click callback that is called when the user clicks onto your     *
+     * bezel.                                                                     */
+     XPLMAvionicsMouse_f       bezelRightClickCallback;
+    /* The callback that is called when the users uses the scroll wheel over your *
+     * avionics' bezel.                                                           */
+     XPLMAvionicsMouseWheel_f  bezelScrollCallback;
+    /* The callback that lets you determine what cursor should be shown when the  *
+     * mouse is over your device's bezel.                                         */
+     XPLMAvionicsCursor_f      bezelCursorCallback;
     /* The mouse click callback that is called when the user clicks onto your     *
      * screen.                                                                    */
-     XPLMAvionicsMouse_f       touchScreenCallback;
+     XPLMAvionicsMouse_f       screenTouchCallback;
+    /* The right mouse click callback that is called when the user clicks onto    *
+     * your screen.                                                               */
+     XPLMAvionicsMouse_f       screenRightTouchCallback;
+    /* The callback that is called when the users uses the scroll wheel over your *
+     * avionics' screen.                                                          */
+     XPLMAvionicsMouseWheel_f  screenScrollCallback;
+    /* The callback that lets you determine what cursor should be shown when the  *
+     * mouse is over your device's screen.                                        */
+     XPLMAvionicsCursor_f      screenCursorCallback;
     /* The key callback that is called when the user types in your popup.         */
      XPLMAvionicsKeyboard_f    keyboardCallback;
     /* A reference which will be passed into each of your draw callbacks. Use this*
@@ -526,10 +576,28 @@ typedef struct {
      XPLMAvionicsCallback_f    drawCallback;
     /* The mouse click callback that is called when the user clicks onto your     *
      * bezel.                                                                     */
-     XPLMAvionicsMouse_f       bezelCallback;
+     XPLMAvionicsMouse_f       bezelClickCallback;
+    /* The mouse click callback that is called when the user clicks onto your     *
+     * bezel.                                                                     */
+     XPLMAvionicsMouse_f       bezelRightClickCallback;
+    /* The callback that is called when the users uses the scroll wheel over your *
+     * avionics' bezel.                                                           */
+     XPLMAvionicsMouseWheel_f  bezelScrollCallback;
+    /* The callback that lets you determine what cursor should be shown when the  *
+     * mouse is over your device's bezel.                                         */
+     XPLMAvionicsCursor_f      bezelCursorCallback;
     /* The mouse click callback that is called when the user clicks onto your     *
      * screen.                                                                    */
-     XPLMAvionicsMouse_f       touchScreenCallback;
+     XPLMAvionicsMouse_f       screenTouchCallback;
+    /* The right mouse click callback that is called when the user clicks onto    *
+     * your screen.                                                               */
+     XPLMAvionicsMouse_f       screenRightTouchCallback;
+    /* The callback that is called when the users uses the scroll wheel over your *
+     * avionics' screen.                                                          */
+     XPLMAvionicsMouseWheel_f  screenScrollCallback;
+    /* The callback that lets you determine what cursor should be shown when the  *
+     * mouse is over your device's screen.                                        */
+     XPLMAvionicsCursor_f      screenCursorCallback;
     /* The key callback that is called when the user types in your popup.         */
      XPLMAvionicsKeyboard_f    keyboardCallback;
     /* null-terminated string of maximum 64 characters to uniquely identify your  *
@@ -537,6 +605,9 @@ typedef struct {
      * when you call XPLMCreateAvionicsEx, so you don't need to hold this string  *
      * in memory after you called XPLMCreateAvionicsEx.                           */
      char *                    deviceID;
+    /* A null-terminated string to give a user-readable name to your device, which*
+     * can be presented in UI dialogs.                                            */
+     char *                    deviceName;
     /* A reference which will be passed into your draw and mouse callbacks. Use   *
      * this to pass information to yourself as needed.                            */
      void *                    refcon;
@@ -575,6 +646,20 @@ XPLM_API void       XPLMDestroyAvionics(
  */
 XPLM_API int        XPLMIsAvionicsBound(
                          XPLMAvionicsID       inID);
+
+/*
+ * XPLMIsCursorOverAvionics
+ * 
+ * Returns true (1) if the mouse is currently over the screen of cockpit
+ * device with the given ID. If they are not NULL, the optional x and y
+ * arguments are filled with the co-ordinates of the mouse cursor in device
+ * co-ordinates.
+ *
+ */
+XPLM_API int        XPLMIsCursorOverAvionics(
+                         XPLMAvionicsID       inID,
+                         int *                outX,                   /* Can be NULL */
+                         int *                outY);                  /* Can be NULL */
 
 /*
  * XPLMSetAvionicsPopupVisible
@@ -840,32 +925,6 @@ typedef int (* XPLMHandleMouseClick_f)(
                          int                  y,
                          XPLMMouseStatus      inMouse,
                          void *               inRefcon);
-
-#if defined(XPLM200)
-/*
- * XPLMCursorStatus
- * 
- * XPLMCursorStatus describes how you would like X-Plane to manage the cursor.
- * See XPLMHandleCursor_f for more info.
- *
- */
-enum {
-    /* X-Plane manages the cursor normally, plugin does not affect the cusrsor.   */
-    xplm_CursorDefault                       = 0,
-
-    /* X-Plane hides the cursor.                                                  */
-    xplm_CursorHidden                        = 1,
-
-    /* X-Plane shows the cursor as the default arrow.                             */
-    xplm_CursorArrow                         = 2,
-
-    /* X-Plane shows the cursor but lets you select an OS cursor.                 */
-    xplm_CursorCustom                        = 3,
-
-
-};
-typedef int XPLMCursorStatus;
-#endif /* XPLM200 */
 
 #if defined(XPLM200)
 /*
