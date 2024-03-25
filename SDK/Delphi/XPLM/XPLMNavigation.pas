@@ -323,7 +323,7 @@ CONST
                                         inIndex             : Integer);
     cdecl; external XPLM_DLL;
 
-{$IFDEF XPLM400}
+{$IFDEF XPLM410}
    {
     XPLMNavFlightPlan
     
@@ -352,9 +352,9 @@ TYPE
  
    );
    PXPLMNavFlightPlan = ^XPLMNavFlightPlan;
-{$ENDIF XPLM400}
+{$ENDIF XPLM410}
 
-{$IFDEF XPLM400}
+{$IFDEF XPLM410}
    {
     XPLMCountFMSFlightPlanEntries
     
@@ -363,9 +363,9 @@ TYPE
    FUNCTION XPLMCountFMSFlightPlanEntries(
                                         inFlightPlan        : XPLMNavFlightPlan) : Integer;
     cdecl; external XPLM_DLL;
-{$ENDIF XPLM400}
+{$ENDIF XPLM410}
 
-{$IFDEF XPLM400}
+{$IFDEF XPLM410}
    {
     XPLMGetDisplayedFMSFlightPlanEntry
     
@@ -374,9 +374,9 @@ TYPE
    FUNCTION XPLMGetDisplayedFMSFlightPlanEntry(
                                         inFlightPlan        : XPLMNavFlightPlan) : Integer;
     cdecl; external XPLM_DLL;
-{$ENDIF XPLM400}
+{$ENDIF XPLM410}
 
-{$IFDEF XPLM400}
+{$IFDEF XPLM410}
    {
     XPLMGetDestinationFMSFlightPlanEntry
     
@@ -385,9 +385,9 @@ TYPE
    FUNCTION XPLMGetDestinationFMSFlightPlanEntry(
                                         inFlightPlan        : XPLMNavFlightPlan) : Integer;
     cdecl; external XPLM_DLL;
-{$ENDIF XPLM400}
+{$ENDIF XPLM410}
 
-{$IFDEF XPLM400}
+{$IFDEF XPLM410}
    {
     XPLMSetDisplayedFMSFlightPlanEntry
     
@@ -397,9 +397,9 @@ TYPE
                                         inFlightPlan        : XPLMNavFlightPlan;
                                         inIndex             : Integer);
     cdecl; external XPLM_DLL;
-{$ENDIF XPLM400}
+{$ENDIF XPLM410}
 
-{$IFDEF XPLM400}
+{$IFDEF XPLM410}
    {
     XPLMSetDestinationFMSFlightPlanEntry
     
@@ -410,9 +410,9 @@ TYPE
                                         inFlightPlan        : XPLMNavFlightPlan;
                                         inIndex             : Integer);
     cdecl; external XPLM_DLL;
-{$ENDIF XPLM400}
+{$ENDIF XPLM410}
 
-{$IFDEF XPLM400}
+{$IFDEF XPLM410}
    {
     XPLMSetDirectToFMSFlightPlanEntry
     
@@ -424,9 +424,9 @@ TYPE
                                         inFlightPlan        : XPLMNavFlightPlan;
                                         inIndex             : Integer);
     cdecl; external XPLM_DLL;
-{$ENDIF XPLM400}
+{$ENDIF XPLM410}
 
-{$IFDEF XPLM400}
+{$IFDEF XPLM410}
    {
     XPLMGetFMSFlightPlanEntryInfo
     
@@ -457,9 +457,9 @@ TYPE
                                         outLat              : PSingle;    { Can be nil }
                                         outLon              : PSingle);    { Can be nil }
     cdecl; external XPLM_DLL;
-{$ENDIF XPLM400}
+{$ENDIF XPLM410}
 
-{$IFDEF XPLM400}
+{$IFDEF XPLM410}
    {
     XPLMSetFMSFlightPlanEntryInfo
     
@@ -474,9 +474,9 @@ TYPE
                                         inRef               : XPLMNavRef;
                                         inAltitude          : Integer);
     cdecl; external XPLM_DLL;
-{$ENDIF XPLM400}
+{$ENDIF XPLM410}
 
-{$IFDEF XPLM400}
+{$IFDEF XPLM410}
    {
     XPLMSetFMSFlightPlanEntryLatLon
     
@@ -490,9 +490,9 @@ TYPE
                                         inLon               : Single;
                                         inAltitude          : Integer);
     cdecl; external XPLM_DLL;
-{$ENDIF XPLM400}
+{$ENDIF XPLM410}
 
-{$IFDEF XPLM400}
+{$IFDEF XPLM410}
    {
     XPLMSetFMSFlightPlanEntryLatLonWithId
     
@@ -508,9 +508,9 @@ TYPE
                                         inId                : XPLMString;
                                         inIdLength          : unsigned int);
     cdecl; external XPLM_DLL;
-{$ENDIF XPLM400}
+{$ENDIF XPLM410}
 
-{$IFDEF XPLM400}
+{$IFDEF XPLM410}
    {
     XPLMClearFMSFlightPlanEntry
     
@@ -521,9 +521,9 @@ TYPE
                                         inFlightPlan        : XPLMNavFlightPlan;
                                         inIndex             : Integer);
     cdecl; external XPLM_DLL;
-{$ENDIF XPLM400}
+{$ENDIF XPLM410}
 
-{$IFDEF XPLM400}
+{$IFDEF XPLM410}
    {
     XPLMLoadFMSFlightPlan
     
@@ -536,9 +536,9 @@ TYPE
                                         inBuffer            : XPLMString;
                                         inBufferLen         : unsigned int);
     cdecl; external XPLM_DLL;
-{$ENDIF XPLM400}
+{$ENDIF XPLM410}
 
-{$IFDEF XPLM400}
+{$IFDEF XPLM410}
    {
     XPLMSaveFMSFlightPlan
     
@@ -558,7 +558,7 @@ TYPE
                                         inBuffer            : XPLMString;
                                         inBufferLen         : unsigned int) : unsigned int;
     cdecl; external XPLM_DLL;
-{$ENDIF XPLM400}
+{$ENDIF XPLM410}
 
 {___________________________________________________________________________
  * GPS RECEIVER

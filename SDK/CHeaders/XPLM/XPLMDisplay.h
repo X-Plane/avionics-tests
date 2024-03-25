@@ -383,6 +383,7 @@ typedef int (* XPLMAvionicsCallback_f)(
                          int                  inIsBefore,
                          void *               inRefcon);
 
+#if defined(XPLM410)
 /*
  * XPLMAvionicsMouse_f
  * 
@@ -399,7 +400,9 @@ typedef int (* XPLMAvionicsMouse_f)(
                          int                  y,
                          int                  inMouse,
                          void *               inRefcon);
+#endif /* XPLM410 */
 
+#if defined(XPLM410)
 /*
  * XPLMAvionicsMouseWheel_f
  * 
@@ -419,7 +422,9 @@ typedef int (* XPLMAvionicsMouseWheel_f)(
                          int                  wheel,
                          int                  clicks,
                          void *               inRefcon);
+#endif /* XPLM410 */
 
+#if defined(XPLM410)
 /*
  * XPLMAvionicsCursor_f
  *
@@ -429,7 +434,9 @@ typedef int (* XPLMAvionicsCursor_f)(
                          int                  x,
                          int                  y,
                          void *               inRefcon);
+#endif /* XPLM410 */
 
+#if defined(XPLM410)
 /*
  * XPLMAvionicsKeyboard_f
  * 
@@ -445,6 +452,7 @@ typedef int (* XPLMAvionicsKeyboard_f)(
                          char                 inVirtualKey,
                          void *               inRefCon,
                          int                  losingFocus);
+#endif /* XPLM410 */
 
 /*
  * XPLMAvionicsID
@@ -476,32 +484,50 @@ typedef struct {
      XPLMAvionicsCallback_f    drawCallbackBefore;
     /* The draw callback to be called after X-Plane has drawn.                    */
      XPLMAvionicsCallback_f    drawCallbackAfter;
+#if defined(XPLM410)
     /* The mouse click callback that is called when the user clicks onto your     *
      * bezel.                                                                     */
      XPLMAvionicsMouse_f       bezelClickCallback;
+#endif /* XPLM410 */
+#if defined(XPLM410)
     /* The mouse click callback that is called when the user clicks onto your     *
      * bezel.                                                                     */
      XPLMAvionicsMouse_f       bezelRightClickCallback;
+#endif /* XPLM410 */
+#if defined(XPLM410)
     /* The callback that is called when the users uses the scroll wheel over your *
      * avionics' bezel.                                                           */
      XPLMAvionicsMouseWheel_f  bezelScrollCallback;
+#endif /* XPLM410 */
+#if defined(XPLM410)
     /* The callback that lets you determine what cursor should be shown when the  *
      * mouse is over your device's bezel.                                         */
      XPLMAvionicsCursor_f      bezelCursorCallback;
+#endif /* XPLM410 */
+#if defined(XPLM410)
     /* The mouse click callback that is called when the user clicks onto your     *
      * screen.                                                                    */
      XPLMAvionicsMouse_f       screenTouchCallback;
+#endif /* XPLM410 */
+#if defined(XPLM410)
     /* The right mouse click callback that is called when the user clicks onto    *
      * your screen.                                                               */
      XPLMAvionicsMouse_f       screenRightTouchCallback;
+#endif /* XPLM410 */
+#if defined(XPLM410)
     /* The callback that is called when the users uses the scroll wheel over your *
      * avionics' screen.                                                          */
      XPLMAvionicsMouseWheel_f  screenScrollCallback;
+#endif /* XPLM410 */
+#if defined(XPLM410)
     /* The callback that lets you determine what cursor should be shown when the  *
      * mouse is over your device's screen.                                        */
      XPLMAvionicsCursor_f      screenCursorCallback;
+#endif /* XPLM410 */
+#if defined(XPLM410)
     /* The key callback that is called when the user types in your popup.         */
      XPLMAvionicsKeyboard_f    keyboardCallback;
+#endif /* XPLM410 */
     /* A reference which will be passed into each of your draw callbacks. Use this*
      * to pass information to yourself as needed.                                 */
      void *                    refcon;
@@ -545,6 +571,7 @@ XPLM_API XPLMAvionicsID XPLMGetAvionicsHandle(
 XPLM_API void       XPLMUnregisterAvionicsCallbacks(
                          XPLMAvionicsID       inAvionicsId);
 
+#if defined(XPLM410)
 /*
  * XPLMCreateAvionics_t
  * 
@@ -570,9 +597,11 @@ typedef struct {
      int                       screenOffsetX;
     /* The screen's vertical offset into the bezel for 2D pop-ups.                */
      int                       screenOffsetY;
-    /* Whether X-Plane should call you to re-draw your device's screen every      *
-     * frame, or only when you call XPLMAvionicsNeedsDrawing().                   */
-     int                       drawEveryFrame;
+    /* If set to true (1), X-Plane won't call your plugin to re-render the        *
+     * device's screen every frame. Instead, you should tell X-Plane you want to  *
+     * refresh your screen with XPLMAvionicsNeedsDrawing(), and X-Plane will call *
+     * you before rendering the next simulator frame.                             */
+     int                       drawOnDemand;
     /* The draw callback you will use to draw the 2D-popup bezel.                 */
      XPLMAvionicsCallback_f    bezelDrawCallback;
     /* The draw callback you will be using to draw into the framebuffer.          */
@@ -615,7 +644,9 @@ typedef struct {
      * this to pass information to yourself as needed.                            */
      void *                    refcon;
 } XPLMCreateAvionics_t;
+#endif /* XPLM410 */
 
+#if defined(XPLM410)
 /*
  * XPLMCreateAvionicsEx
  * 
@@ -628,7 +659,9 @@ typedef struct {
  */
 XPLM_API XPLMAvionicsID XPLMCreateAvionicsEx(
                          XPLMCreateAvionics_t * inParams);
+#endif /* XPLM410 */
 
+#if defined(XPLM410)
 /*
  * XPLMDestroyAvionics
  * 
@@ -639,7 +672,9 @@ XPLM_API XPLMAvionicsID XPLMCreateAvionicsEx(
  */
 XPLM_API void       XPLMDestroyAvionics(
                          XPLMAvionicsID       inID);
+#endif /* XPLM410 */
 
+#if defined(XPLM410)
 /*
  * XPLMIsAvionicsBound
  * 
@@ -649,7 +684,9 @@ XPLM_API void       XPLMDestroyAvionics(
  */
 XPLM_API int        XPLMIsAvionicsBound(
                          XPLMAvionicsID       inID);
+#endif /* XPLM410 */
 
+#if defined(XPLM410)
 /*
  * XPLMIsCursorOverAvionics
  * 
@@ -663,7 +700,9 @@ XPLM_API int        XPLMIsCursorOverAvionics(
                          XPLMAvionicsID       inID,
                          int *                outX,                   /* Can be NULL */
                          int *                outY);                  /* Can be NULL */
+#endif /* XPLM410 */
 
+#if defined(XPLM410)
 /*
  * XPLMAvionicsNeedsDrawing
  * 
@@ -675,7 +714,9 @@ XPLM_API int        XPLMIsCursorOverAvionics(
  */
 XPLM_API void       XPLMAvionicsNeedsDrawing(
                          XPLMAvionicsID       inID);
+#endif /* XPLM410 */
 
+#if defined(XPLM410)
 /*
  * XPLMSetAvionicsPopupVisible
  * 
@@ -685,7 +726,9 @@ XPLM_API void       XPLMAvionicsNeedsDrawing(
 XPLM_API void       XPLMSetAvionicsPopupVisible(
                          XPLMAvionicsID       inID,
                          int                  inVisible);
+#endif /* XPLM410 */
 
+#if defined(XPLM410)
 /*
  * XPLMIsAvionicsPopupVisible
  * 
@@ -694,7 +737,9 @@ XPLM_API void       XPLMSetAvionicsPopupVisible(
  */
 XPLM_API int        XPLMIsAvionicsPopupVisible(
                          XPLMAvionicsID       inID);
+#endif /* XPLM410 */
 
+#if defined(XPLM410)
 /*
  * XPLMPopOutAvionics
  * 
@@ -703,7 +748,9 @@ XPLM_API int        XPLMIsAvionicsPopupVisible(
  */
 XPLM_API void       XPLMPopOutAvionics(
                          XPLMAvionicsID       inID);
+#endif /* XPLM410 */
 
+#if defined(XPLM410)
 /*
  * XPLMIsAvionicsPoppedOut
  * 
@@ -712,7 +759,9 @@ XPLM_API void       XPLMPopOutAvionics(
  */
 XPLM_API int        XPLMIsAvionicsPoppedOut(
                          XPLMAvionicsID       inID);
+#endif /* XPLM410 */
 
+#if defined(XPLM410)
 /*
  * XPLMTakeAvionicsKeyboardFocus
  * 
@@ -722,7 +771,9 @@ XPLM_API int        XPLMIsAvionicsPoppedOut(
  */
 XPLM_API void       XPLMTakeAvionicsKeyboardFocus(
                          XPLMAvionicsID       inID);
+#endif /* XPLM410 */
 
+#if defined(XPLM410)
 /*
  * XPLMHasAvionicsKeyboardFocus
  * 
@@ -732,7 +783,9 @@ XPLM_API void       XPLMTakeAvionicsKeyboardFocus(
  */
 XPLM_API int        XPLMHasAvionicsKeyboardFocus(
                          XPLMAvionicsID       inID);
+#endif /* XPLM410 */
 
+#if defined(XPLM410)
 /*
  * XPLMGetAvionicsGeometry
  * 
@@ -746,7 +799,9 @@ XPLM_API void       XPLMGetAvionicsGeometry(
                          int *                outTop,                 /* Can be NULL */
                          int *                outRight,               /* Can be NULL */
                          int *                outBottom);             /* Can be NULL */
+#endif /* XPLM410 */
 
+#if defined(XPLM410)
 /*
  * XPLMSetAvionicsGeometry
  * 
@@ -760,7 +815,9 @@ XPLM_API void       XPLMSetAvionicsGeometry(
                          int                  inTop,
                          int                  inRight,
                          int                  inBottom);
+#endif /* XPLM410 */
 
+#if defined(XPLM410)
 /*
  * XPLMGetAvionicsGeometryOS
  * 
@@ -773,7 +830,9 @@ XPLM_API void       XPLMGetAvionicsGeometryOS(
                          int *                outTop,                 /* Can be NULL */
                          int *                outRight,               /* Can be NULL */
                          int *                outBottom);             /* Can be NULL */
+#endif /* XPLM410 */
 
+#if defined(XPLM410)
 /*
  * XPLMSetAvionicsGeometryOS
  * 
@@ -786,6 +845,7 @@ XPLM_API void       XPLMSetAvionicsGeometryOS(
                          int                  inTop,
                          int                  inRight,
                          int                  inBottom);
+#endif /* XPLM410 */
 
 #endif /* XPLM400 */
 /***************************************************************************

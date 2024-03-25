@@ -76,19 +76,35 @@ static void draw_button(const ui_btn_t *btn, bool hover) {
         glColor3f(1, 1, 1);
     }
     glLineWidth(2);
+    glBegin(GL_LINE_LOOP);
+    
+    glVertex2f(btn->x, btn->y);
+    glVertex2f(btn->x, btn->y + btn->h);
+    glVertex2f(btn->x + btn->w, btn->y + btn->h);
+    glVertex2f(btn->x + btn->w, btn->y);
+    glEnd();
+}
+
+static void draw_cursor(int x, int y) {
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(x - 3, y - 3);
+    glVertex2f(x - 3, y + 3);
+    glVertex2f(x + 3, y + 3);
+    glVertex2f(x + 3, y - 3);
+    glEnd();
+    
     glBegin(GL_LINES);
+    glVertex2f(x, y - 12);
+    glVertex2f(x, y - 3);
     
-    glVertex2f(btn->x, btn->y);
-    glVertex2f(btn->x, btn->y + btn->h);
+    glVertex2f(x, y + 12);
+    glVertex2f(x, y + 3);
     
-    glVertex2f(btn->x, btn->y + btn->h);
-    glVertex2f(btn->x + btn->w, btn->y + btn->h);
-
-    glVertex2f(btn->x + btn->w, btn->y + btn->h);
-    glVertex2f(btn->x + btn->w, btn->y);
-
-    glVertex2f(btn->x + btn->w, btn->y);
-    glVertex2f(btn->x, btn->y);
+    glVertex2f(x - 15, y);
+    glVertex2f(x - 3, y);
+    
+    glVertex2f(x + 15, y);
+    glVertex2f(x + 3, y);
     glEnd();
 }
 
@@ -116,13 +132,13 @@ static int custom_keyboard(
 static int custom_bezel_click(XPLMDeviceID id, int x, int y, int mouse, void *refcon)
 {
 	log_msg("device %d: bezel click %s at (%d, %d)", id, click_type(mouse), x, y);
-	return 1;
+	return 0;
 }
 
 static int custom_bezel_right_click(XPLMDeviceID id, int x, int y, int mouse, void *refcon)
 {
 	log_msg("device %d: bezel right click %s at (%d, %d)", id, click_type(mouse), x, y);
-	return 1;
+	return 0;
 }
 
 static int custom_bezel_scroll(XPLMDeviceID id, int x, int y, int wheel, int clicks, void *refcon)
@@ -220,7 +236,7 @@ static int custom_screen(XPLMDeviceID id, int before, void *refcon)
 	(void)before;
 	
 	XPLMSetGraphicsState(0, 0, 0, 0, 0, 0, 0);
-    
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     
     int x = 0, y = 0;
     int hover = XPLMIsCursorOverAvionics(device, &x, &y);
@@ -234,37 +250,13 @@ static int custom_screen(XPLMDeviceID id, int before, void *refcon)
     
     if(clicked)
     {
-        glBegin(GL_LINES);
         glColor3f(1.f, 0.f, 1.f);
-        glVertex2f(pos_x - 15, pos_y - 10);
-        glVertex2f(pos_x - 3, pos_y - 2);
-
-        glVertex2f(pos_x - 15, pos_y + 10);
-        glVertex2f(pos_x - 3, pos_y + 2);
-
-        glVertex2f(pos_x + 15, pos_y + 10);
-        glVertex2f(pos_x + 3, pos_y + 2);
-
-        glVertex2f(pos_x + 15, pos_y - 10);
-        glVertex2f(pos_x + 3, pos_y - 2);
-        glEnd();
+        draw_cursor(pos_x, pos_y);
     }
     else if(hover)
     {
-        glBegin(GL_LINES);
         glColor3f(1.f, 1.f, 1.f);
-        glVertex2f(x - 15, y - 10);
-        glVertex2f(x - 3, y - 2);
-
-        glVertex2f(x - 15, y + 10);
-        glVertex2f(x - 3, y + 2);
-
-        glVertex2f(x + 15, y + 10);
-        glVertex2f(x + 3, y + 2);
-
-        glVertex2f(x + 15, y - 10);
-        glVertex2f(x + 3, y - 2);
-        glEnd();
+        draw_cursor(x, y);
     }
 	
 	if(clicked)
@@ -308,7 +300,7 @@ void custom_device_init()
 		.bezelHeight = DEV_HEIGHT,
 		.screenOffsetX = BEZEL_SIZE,
 		.screenOffsetY = BEZEL_SIZE,
-        .drawEveryFrame = true,
+        .drawOnDemand = false,
 		.bezelDrawCallback = custom_bezel,
 		.drawCallback = custom_screen,
 		.screenTouchCallback = custom_screen_click,
@@ -319,7 +311,8 @@ void custom_device_init()
         .bezelRightClickCallback = custom_bezel_right_click,
         .bezelScrollCallback = custom_bezel_scroll,
 		.keyboardCallback = custom_keyboard,
-		.deviceID = "TEST_AVIONICS"
+		.deviceID = "TEST_AVIONICS",
+        .deviceName = "Test Avionics 9000"
 	};
 	device = XPLMCreateAvionicsEx(&av);
 	

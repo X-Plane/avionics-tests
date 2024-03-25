@@ -368,6 +368,7 @@ TYPE
                                     inIsBefore          : Integer;
                                     inRefcon            : pointer) : Integer; cdecl;
 
+{$IFDEF XPLM410}
    {
     XPLMAvionicsMouse_f
     
@@ -377,13 +378,16 @@ TYPE
     user can click. Return 1 to consume the event, or 0 to let X-Plane process
     it (for stock avionics devices).
    }
+TYPE
      XPLMAvionicsMouse_f = FUNCTION(
                                     inID                : XPLMDeviceID;
                                     x                   : Integer;
                                     y                   : Integer;
                                     inMouse             : Integer;
                                     inRefcon            : pointer) : Integer; cdecl;
+{$ENDIF XPLM410}
 
+{$IFDEF XPLM410}
    {
     XPLMAvionicsMouseWheel_f
     
@@ -402,7 +406,9 @@ TYPE
                                     wheel               : Integer;
                                     clicks              : Integer;
                                     inRefcon            : pointer) : Integer; cdecl;
+{$ENDIF XPLM410}
 
+{$IFDEF XPLM410}
    {
     XPLMAvionicsCursor_f
    }
@@ -411,7 +417,9 @@ TYPE
                                     x                   : Integer;
                                     y                   : Integer;
                                     inRefcon            : pointer) : Integer; cdecl;
+{$ENDIF XPLM410}
 
+{$IFDEF XPLM410}
    {
     XPLMAvionicsKeyboard_f
     
@@ -426,7 +434,9 @@ TYPE
                                     inVirtualKey        : XPLMChar;
                                     inRefCon            : pointer;
                                     losingFocus         : Integer) : Integer; cdecl;
+{$ENDIF XPLM410}
 
+TYPE
    {
     XPLMAvionicsID
     
@@ -456,32 +466,50 @@ TYPE
      drawCallbackBefore       : XPLMAvionicsCallback_f;
      { The draw callback to be called after X-Plane has drawn.                    }
      drawCallbackAfter        : XPLMAvionicsCallback_f;
+{$IFDEF XPLM410}
      { The mouse click callback that is called when the user clicks onto your     }
      { bezel.                                                                     }
      bezelClickCallback       : XPLMAvionicsMouse_f;
+{$ENDIF XPLM410}
+{$IFDEF XPLM410}
      { The mouse click callback that is called when the user clicks onto your     }
      { bezel.                                                                     }
      bezelRightClickCallback  : XPLMAvionicsMouse_f;
+{$ENDIF XPLM410}
+{$IFDEF XPLM410}
      { The callback that is called when the users uses the scroll wheel over your }
      { avionics' bezel.                                                           }
      bezelScrollCallback      : XPLMAvionicsMouseWheel_f;
+{$ENDIF XPLM410}
+{$IFDEF XPLM410}
      { The callback that lets you determine what cursor should be shown when the  }
      { mouse is over your device's bezel.                                         }
      bezelCursorCallback      : XPLMAvionicsCursor_f;
+{$ENDIF XPLM410}
+{$IFDEF XPLM410}
      { The mouse click callback that is called when the user clicks onto your     }
      { screen.                                                                    }
      screenTouchCallback      : XPLMAvionicsMouse_f;
+{$ENDIF XPLM410}
+{$IFDEF XPLM410}
      { The right mouse click callback that is called when the user clicks onto    }
      { your screen.                                                               }
      screenRightTouchCallback : XPLMAvionicsMouse_f;
+{$ENDIF XPLM410}
+{$IFDEF XPLM410}
      { The callback that is called when the users uses the scroll wheel over your }
      { avionics' screen.                                                          }
      screenScrollCallback     : XPLMAvionicsMouseWheel_f;
+{$ENDIF XPLM410}
+{$IFDEF XPLM410}
      { The callback that lets you determine what cursor should be shown when the  }
      { mouse is over your device's screen.                                        }
      screenCursorCallback     : XPLMAvionicsCursor_f;
+{$ENDIF XPLM410}
+{$IFDEF XPLM410}
      { The key callback that is called when the user types in your popup.         }
      keyboardCallback         : XPLMAvionicsKeyboard_f;
+{$ENDIF XPLM410}
      { A reference which will be passed into each of your draw callbacks. Use this}
      { to pass information to yourself as needed.                                 }
      refcon                   : pointer;
@@ -526,6 +554,7 @@ TYPE
                                         inAvionicsId        : XPLMAvionicsID);
     cdecl; external XPLM_DLL;
 
+{$IFDEF XPLM410}
    {
     XPLMCreateAvionics_t
     
@@ -551,9 +580,11 @@ TYPE
      screenOffsetX            : Integer;
      { The screen's vertical offset into the bezel for 2D pop-ups.                }
      screenOffsetY            : Integer;
-     { Whether X-Plane should call you to re-draw your device's screen every      }
-     { frame, or only when you call XPLMAvionicsNeedsDrawing().                   }
-     drawEveryFrame           : Integer;
+     { If set to true (1), X-Plane won't call your plugin to re-render the        }
+     { device's screen every frame. Instead, you should tell X-Plane you want to  }
+     { refresh your screen with XPLMAvionicsNeedsDrawing(), and X-Plane will call }
+     { you before rendering the next simulator frame.                             }
+     drawOnDemand             : Integer;
      { The draw callback you will use to draw the 2D-popup bezel.                 }
      bezelDrawCallback        : XPLMAvionicsCallback_f;
      { The draw callback you will be using to draw into the framebuffer.          }
@@ -597,7 +628,9 @@ TYPE
      refcon                   : pointer;
    END;
    PXPLMCreateAvionics_t = ^XPLMCreateAvionics_t;
+{$ENDIF XPLM410}
 
+{$IFDEF XPLM410}
    {
     XPLMCreateAvionicsEx
     
@@ -610,7 +643,9 @@ TYPE
    FUNCTION XPLMCreateAvionicsEx(
                                         inParams            : PXPLMCreateAvionics_t) : XPLMAvionicsID;
     cdecl; external XPLM_DLL;
+{$ENDIF XPLM410}
 
+{$IFDEF XPLM410}
    {
     XPLMDestroyAvionics
     
@@ -621,7 +656,9 @@ TYPE
    PROCEDURE XPLMDestroyAvionics(
                                         inID                : XPLMAvionicsID);
     cdecl; external XPLM_DLL;
+{$ENDIF XPLM410}
 
+{$IFDEF XPLM410}
    {
     XPLMIsAvionicsBound
     
@@ -631,7 +668,9 @@ TYPE
    FUNCTION XPLMIsAvionicsBound(
                                         inID                : XPLMAvionicsID) : Integer;
     cdecl; external XPLM_DLL;
+{$ENDIF XPLM410}
 
+{$IFDEF XPLM410}
    {
     XPLMIsCursorOverAvionics
     
@@ -645,7 +684,9 @@ TYPE
                                         outX                : PInteger;    { Can be nil }
                                         outY                : PInteger) : Integer;    { Can be nil }
     cdecl; external XPLM_DLL;
+{$ENDIF XPLM410}
 
+{$IFDEF XPLM410}
    {
     XPLMAvionicsNeedsDrawing
     
@@ -657,7 +698,9 @@ TYPE
    PROCEDURE XPLMAvionicsNeedsDrawing(
                                         inID                : XPLMAvionicsID);
     cdecl; external XPLM_DLL;
+{$ENDIF XPLM410}
 
+{$IFDEF XPLM410}
    {
     XPLMSetAvionicsPopupVisible
     
@@ -667,7 +710,9 @@ TYPE
                                         inID                : XPLMAvionicsID;
                                         inVisible           : Integer);
     cdecl; external XPLM_DLL;
+{$ENDIF XPLM410}
 
+{$IFDEF XPLM410}
    {
     XPLMIsAvionicsPopupVisible
     
@@ -676,7 +721,9 @@ TYPE
    FUNCTION XPLMIsAvionicsPopupVisible(
                                         inID                : XPLMAvionicsID) : Integer;
     cdecl; external XPLM_DLL;
+{$ENDIF XPLM410}
 
+{$IFDEF XPLM410}
    {
     XPLMPopOutAvionics
     
@@ -685,7 +732,9 @@ TYPE
    PROCEDURE XPLMPopOutAvionics(
                                         inID                : XPLMAvionicsID);
     cdecl; external XPLM_DLL;
+{$ENDIF XPLM410}
 
+{$IFDEF XPLM410}
    {
     XPLMIsAvionicsPoppedOut
     
@@ -694,7 +743,9 @@ TYPE
    FUNCTION XPLMIsAvionicsPoppedOut(
                                         inID                : XPLMAvionicsID) : Integer;
     cdecl; external XPLM_DLL;
+{$ENDIF XPLM410}
 
+{$IFDEF XPLM410}
    {
     XPLMTakeAvionicsKeyboardFocus
     
@@ -704,7 +755,9 @@ TYPE
    PROCEDURE XPLMTakeAvionicsKeyboardFocus(
                                         inID                : XPLMAvionicsID);
     cdecl; external XPLM_DLL;
+{$ENDIF XPLM410}
 
+{$IFDEF XPLM410}
    {
     XPLMHasAvionicsKeyboardFocus
     
@@ -714,7 +767,9 @@ TYPE
    FUNCTION XPLMHasAvionicsKeyboardFocus(
                                         inID                : XPLMAvionicsID) : Integer;
     cdecl; external XPLM_DLL;
+{$ENDIF XPLM410}
 
+{$IFDEF XPLM410}
    {
     XPLMGetAvionicsGeometry
     
@@ -728,7 +783,9 @@ TYPE
                                         outRight            : PInteger;    { Can be nil }
                                         outBottom           : PInteger);    { Can be nil }
     cdecl; external XPLM_DLL;
+{$ENDIF XPLM410}
 
+{$IFDEF XPLM410}
    {
     XPLMSetAvionicsGeometry
     
@@ -742,7 +799,9 @@ TYPE
                                         inRight             : Integer;
                                         inBottom            : Integer);
     cdecl; external XPLM_DLL;
+{$ENDIF XPLM410}
 
+{$IFDEF XPLM410}
    {
     XPLMGetAvionicsGeometryOS
     
@@ -755,7 +814,9 @@ TYPE
                                         outRight            : PInteger;    { Can be nil }
                                         outBottom           : PInteger);    { Can be nil }
     cdecl; external XPLM_DLL;
+{$ENDIF XPLM410}
 
+{$IFDEF XPLM410}
    {
     XPLMSetAvionicsGeometryOS
     
@@ -768,6 +829,7 @@ TYPE
                                         inRight             : Integer;
                                         inBottom            : Integer);
     cdecl; external XPLM_DLL;
+{$ENDIF XPLM410}
 
 {$ENDIF XPLM400}
 {___________________________________________________________________________
