@@ -48,7 +48,7 @@ void log_msg(const char *fmt, ...)
 	va_end(args);
 	XPLMDebugString(data);
 	XPLMDebugString("\n");
-	fprintf(stderr, "%s\n", data);
+	fprintf(stderr, "[AVIONICS] %s\n", data);
 }
 
 PLUGIN_API int XPluginStart(char *name, char *sig, char *desc)

@@ -10,6 +10,7 @@
 #include <XPLMDisplay.h>
 #include <XPLMGraphics.h>
 #include <XPLMUtilities.h>
+#include <XPLMMenus.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -32,7 +33,7 @@ static int clicked = false;
 static int right_pos_x = 0, right_pos_y = 0;
 static int right_clicked = false;
 static XPLMAvionicsID device = NULL;
-static XPLMCommandRef toggle_popup = NULL;
+static XPLMCommandRef show_popup = NULL;
 
 typedef struct {
     int x, y, w, h;
@@ -286,7 +287,7 @@ static int handle_popup(XPLMCommandRef cmd, XPLMCommandPhase phase, void *refcon
 	
     if(phase != xplm_CommandBegin) return 1;
     XPLMAvionicsID id = refcon;
-    XPLMSetAvionicsPopupVisible(id, !XPLMIsAvionicsPopupVisible(id));
+    XPLMSetAvionicsPopupVisible(id, 1);
     return 1;
 }
 
@@ -316,13 +317,16 @@ void custom_device_init()
 	};
 	device = XPLMCreateAvionicsEx(&av);
 	
-	toggle_popup = XPLMCreateCommand("laminar/avionics_test/toggle_popup", "Toggle Test Avionics Popup");
-	XPLMRegisterCommandHandler(toggle_popup, handle_popup, 1, device);
+	show_popup = XPLMCreateCommand("laminar/avionics_test/show_popup", "Show Test Avionics Popup");
+	XPLMRegisterCommandHandler(show_popup, handle_popup, 1, device);
 	
+	XPLMMenuID menu = XPLMFindPluginsMenu();
+	if(menu)
+		XPLMAppendMenuItemWithCommand(menu, "Open Avionics Popup", show_popup);
 }
 
 void custom_device_fini()
 {
-	XPLMUnregisterCommandHandler(toggle_popup, handle_popup, 1, device);
+	XPLMUnregisterCommandHandler(show_popup, handle_popup, 1, device);
 	XPLMDestroyAvionics(device);
 }

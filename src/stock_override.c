@@ -102,7 +102,7 @@ static int stock_screen_click(XPLMDeviceID id, int x, int y, XPLMMouseStatus mou
 
 static XPLMCursorStatus stock_screen_cursor(XPLMDeviceID id, int x, int y, void *refcon) {
     log_msg("%s: screen cursor at (%d, %d)", device_str[id], x, y);
-    bool in_rect = x > 50 && x < 100 && y > 50 && y < 100;
+    bool in_rect = x > 0 && x < 100 && y > 100 && y < 200;
     
     return in_rect ? xplm_CursorHidden : xplm_CursorDefault;
 }
