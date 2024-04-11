@@ -54,13 +54,13 @@ static bool in_button(const ui_btn_t *btn, int x, int y) {
 }
 
 static void draw_button(const ui_btn_t *btn, bool hover) {
-    
+
+    glBegin(GL_QUADS);
     if(btn->right_clicked) {
         glColor3f(0.4, 0.6, 0.6);
     } else {
         glColor3f(0.4, 0.4, 0.4);
     }
-    glBegin(GL_QUADS);
     glVertex2f(btn->x, btn->y);
     glVertex2f(btn->x, btn->y + btn->h);
     glVertex2f(btn->x + btn->w, btn->y + btn->h);
@@ -71,13 +71,14 @@ static void draw_button(const ui_btn_t *btn, bool hover) {
     if(!btn->clicked && !hover)
         return;
     
-    if(btn->clicked) {
-        glColor3f(1, 0, 1);
-    } else {
-        glColor3f(1, 1, 1);
-    }
+
     glLineWidth(2);
     glBegin(GL_LINE_LOOP);
+    if(btn->clicked) {
+        glColor4f(1, 0, 1, 1);
+    } else {
+        glColor4f(1, 1, 1, 1);
+    }
     
     glVertex2f(btn->x, btn->y);
     glVertex2f(btn->x, btn->y + btn->h);
@@ -86,8 +87,10 @@ static void draw_button(const ui_btn_t *btn, bool hover) {
     glEnd();
 }
 
-static void draw_cursor(int x, int y) {
+static void draw_cursor(int x, int y, float r, float g, float b) {
     glBegin(GL_LINE_LOOP);
+    glColor4f(r, g, b, 1);
+    
     glVertex2f(x - 3, y - 3);
     glVertex2f(x - 3, y + 3);
     glVertex2f(x + 3, y + 3);
@@ -95,6 +98,8 @@ static void draw_cursor(int x, int y) {
     glEnd();
     
     glBegin(GL_LINES);
+    glColor4f(r, g, b, 1);
+    
     glVertex2f(x, y - 12);
     glVertex2f(x, y - 3);
     
@@ -214,7 +219,7 @@ static int custom_screen_cursor(XPLMDeviceID id, int x, int y, void *refcon)
 static int custom_bezel(XPLMDeviceID id, int before, void *refcon)
 {
     glBegin(GL_QUADS);
-    glColor3f(0.5, 0.5, 0.5);
+    glColor4f(0.5, 0.5, 0.5, 1.f);
     glVertex2f(0, 0);
     glVertex2f(0, DEV_HEIGHT);
     glVertex2f(DEV_WIDTH, DEV_HEIGHT);
@@ -236,7 +241,9 @@ static int custom_screen(XPLMDeviceID id, int before, void *refcon)
 	(void)refcon;
 	(void)before;
 	
-	XPLMSetGraphicsState(0, 0, 0, 0, 0, 0, 0);
+	XPLMSetGraphicsState(0, 0, 0, 0, 1, 1, 0);
+    glClearColor(0, 0, 0, 1);
+    glPolygonMode(GL_FRONT, GL_FILL);
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
     
     int x = 0, y = 0;
@@ -251,13 +258,11 @@ static int custom_screen(XPLMDeviceID id, int before, void *refcon)
     
     if(clicked)
     {
-        glColor3f(1.f, 0.f, 1.f);
-        draw_cursor(pos_x, pos_y);
+        draw_cursor(pos_x, pos_y, 1, 0, 1);
     }
     else if(hover)
     {
-        glColor3f(1.f, 1.f, 1.f);
-        draw_cursor(x, y);
+        draw_cursor(x, y, 1, 1, 1);
     }
 	
 	if(clicked)
