@@ -24,11 +24,15 @@
 #define PLUGIN_NAME "Avionics Checks"
 #define PLUGIN_DESC "Creates a basic avionics device"
 
-void stock_overrides_init();
+static XPLMMenuID menu = NULL;
+static int menu_item = -1;
+
+void stock_overrides_init(XPLMMenuID menu);
 void stock_overrides_fini();
 
-void custom_device_init();
+void custom_device_init(XPLMMenuID menu);
 void custom_device_fini();
+
 
 const char *click_type(int mouse) {
 	switch(mouse) {
@@ -59,6 +63,10 @@ PLUGIN_API int XPluginStart(char *name, char *sig, char *desc)
 	strcpy(sig, PLUGIN_SIG);
 	strcpy(desc, PLUGIN_DESC);
     
+    int xp_ver = 0, xplm_ver = 0;
+    XPLMGetVersions(&xp_ver, &xplm_ver, NULL);
+    log_msg("XP Version: %d, XPLM Version: %d", xp_ver, xplm_ver);
+    
     return 1;
 }
 
@@ -67,10 +75,16 @@ PLUGIN_API void XPluginStop(void)
 	
 }
 
+
 PLUGIN_API int XPluginEnable(void)
 {
-	stock_overrides_init();
-	custom_device_init();
+    // Create a menu to stuff all of our test commands
+    XPLMMenuID plugins_menu = XPLMFindPluginsMenu();
+    menu_item = XPLMAppendMenuItem(plugins_menu, "Avionics Test", NULL, 0);
+    menu = XPLMCreateMenu("Avionics Tests", plugins_menu, menu_item, NULL, NULL);
+    
+	stock_overrides_init(menu);
+	custom_device_init(menu);
     return 1;
 }
 
@@ -78,6 +92,14 @@ PLUGIN_API void XPluginDisable(void)
 {
 	stock_overrides_fini();
 	custom_device_fini();
+    XPLMClearAllMenuItems(menu);
+    XPLMDestroyMenu(menu);
+
+    XPLMMenuID plugins_menu = XPLMFindPluginsMenu();
+    XPLMRemoveMenuItem(plugins_menu, menu_item);
+    
+    menu = NULL;
+    menu_item = -1;
 }
 
 PLUGIN_API void XPluginReceiveMessage(XPLMPluginID from, int msg, void *param)

@@ -296,7 +296,7 @@ static int handle_popup(XPLMCommandRef cmd, XPLMCommandPhase phase, void *refcon
     return 1;
 }
 
-void custom_device_init()
+void custom_device_init(XPLMMenuID menu)
 {
 	XPLMCreateAvionics_t av = (XPLMCreateAvionics_t){
 		.structSize = sizeof(XPLMCreateAvionics_t),
@@ -325,9 +325,8 @@ void custom_device_init()
 	show_popup = XPLMCreateCommand("laminar/avionics_test/show_popup", "Show Test Avionics Popup");
 	XPLMRegisterCommandHandler(show_popup, handle_popup, 1, device);
 	
-	XPLMMenuID menu = XPLMFindPluginsMenu();
 	if(menu)
-		XPLMAppendMenuItemWithCommand(menu, "Open Avionics Popup", show_popup);
+		XPLMAppendMenuItemWithCommand(menu, "Open Test Device Popup", show_popup);
 }
 
 void custom_device_fini()

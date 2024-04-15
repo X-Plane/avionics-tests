@@ -9,6 +9,7 @@
  */
 #include <XPLMDisplay.h>
 #include <XPLMGraphics.h>
+#include <XPLMMenus.h>
 #include <XPLMUtilities.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -27,6 +28,29 @@ static XPLMAvionicsID gns530_1 = NULL;
 static XPLMAvionicsID gns430_2 = NULL;
 static XPLMAvionicsID cdu_1 = NULL;
 
+static XPLMMenuID devices_menu = NULL;
+static int devices_menu_item = -1;
+
+static XPLMDeviceID device_ids[] = {
+    xplm_device_GNS430_1,
+    xplm_device_GNS430_2,
+    xplm_device_GNS530_1,
+    xplm_device_GNS530_2,
+    xplm_device_CDU739_1,
+    xplm_device_CDU739_2,
+    xplm_device_G1000_PFD_1,
+    xplm_device_G1000_MFD,
+    xplm_device_G1000_PFD_2,
+    xplm_device_CDU815_1,
+    xplm_device_CDU815_2,
+    xplm_device_Primus_PFD_1,
+    xplm_device_Primus_PFD_2,
+    xplm_device_Primus_MFD_1,
+    xplm_device_Primus_MFD_2,
+    xplm_device_Primus_MFD_3,
+    xplm_device_Primus_RMU_1,
+    xplm_device_Primus_RMU_2,	
+};
 
 static const char *device_str[] = {
     "xplm_device_GNS430_1",
@@ -48,6 +72,29 @@ static const char *device_str[] = {
     "xplm_device_Primus_RMU_1",
     "xplm_device_Primus_RMU_2",	
 };
+
+static const char *device_names[] = {
+    "GNS430 1",
+    "GNS430 2",
+    "GNS530 1",
+    "GNS530 2",
+    "CDU739 1",
+    "CDU739 2",
+    "G1000 PFD 1",
+    "G1000 MFD",
+    "G1000 PFD 2",
+    "CDU815 1",
+    "CDU815 2",
+    "Primus_PFD 1",
+    "Primus_PFD 2",
+    "Primus_MFD 1",
+    "Primus_MFD 2",
+    "Primus_MFD 3",
+    "Primus_RMU 1",
+    "Primus_RMU 2",	
+};
+
+static const int device_count = sizeof(device_ids) / sizeof(device_ids[0]);
 
 static int stock_keyboard(
 	XPLMDeviceID id,
@@ -166,15 +213,50 @@ static XPLMAvionicsID register_device(XPLMDeviceID id, XPLMAvionicsCallback_f dr
 	return XPLMRegisterAvionicsCallbacksEx(&av);
 }
 
-void stock_overrides_init()
+
+
+// Make a list of all devices, let users pick one and check whether it's bound
+static void menu_handler(void *menu_ptr, void *item_ptr)
+{
+    XPLMDeviceID id = (XPLMDeviceID)(intptr_t)item_ptr;
+    XPLMAvionicsID handle = XPLMGetAvionicsHandle(id);
+    if(!handle)
+    {
+        log_msg("could not get handle for %s (0x%02x)", device_str[id], id);
+        return;
+    }
+    bool bound = XPLMIsAvionicsBound(handle);
+    
+    log_msg("%s (0x%02x) %s", device_str[id], id, bound ? "bound" : "not bound");
+}
+
+static void create_menus(XPLMMenuID parent)
+{
+    devices_menu_item = XPLMAppendMenuItem(parent, "Check Device Binds", NULL, 0);
+    devices_menu = XPLMCreateMenu("Check Device Binds", parent, devices_menu_item, menu_handler, NULL);
+    
+    for(int i = 0; i < device_count; ++i)
+    {
+        XPLMAppendMenuItem(devices_menu, device_names[i], (void *)(intptr_t)device_ids[i], 0);
+    }
+}
+
+void stock_overrides_init(XPLMMenuID menu)
 {
 	gns530_1 = register_device(xplm_device_GNS530_1, stock_draw);
 	gns430_2 = register_device(xplm_device_GNS430_2, stock_draw);
 	cdu_1 = register_device(xplm_device_CDU739_1, NULL);
+    
+    create_menus(menu);
 }
 
 void stock_overrides_fini()
 {
+    XPLMClearAllMenuItems(devices_menu);
+    XPLMDestroyMenu(devices_menu);
+    devices_menu = NULL;
+    devices_menu_item = -1;
+    
 	XPLMUnregisterAvionicsCallbacks(gns530_1);
 	XPLMUnregisterAvionicsCallbacks(gns430_2);
 	XPLMUnregisterAvionicsCallbacks(cdu_1);
