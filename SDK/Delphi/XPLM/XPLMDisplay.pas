@@ -398,7 +398,6 @@ TYPE
    }
 TYPE
      XPLMAvionicsMouse_f = FUNCTION(
-                                    inID                : XPLMDeviceID;
                                     x                   : Integer;
                                     y                   : Integer;
                                     inMouse             : XPLMMouseStatus;
@@ -418,7 +417,6 @@ TYPE
     horizontal axis (for OS/mouse combinations that support this).
    }
      XPLMAvionicsMouseWheel_f = FUNCTION(
-                                    inID                : XPLMDeviceID;
                                     x                   : Integer;
                                     y                   : Integer;
                                     wheel               : Integer;
@@ -436,7 +434,6 @@ TYPE
     particular one (see XPLMCursorStatus).
    }
      XPLMAvionicsCursor_f = FUNCTION(
-                                    inID                : XPLMDeviceID;
                                     x                   : Integer;
                                     y                   : Integer;
                                     inRefcon            : pointer) : XPLMCursorStatus; cdecl;
@@ -451,7 +448,6 @@ TYPE
     process it (for stock avionics devices).
    }
      XPLMAvionicsKeyboard_f = FUNCTION(
-                                    inID                : XPLMDeviceID;
                                     inKey               : XPLMChar;
                                     inFlags             : XPLMKeyFlags;
                                     inVirtualKey        : XPLMChar;

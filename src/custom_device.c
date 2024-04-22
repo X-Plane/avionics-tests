@@ -115,7 +115,6 @@ static void draw_cursor(int x, int y, float r, float g, float b) {
 }
 
 static int custom_keyboard(
-	XPLMDeviceID id,
 	char key,
 	XPLMKeyFlags flags,
 	char vkey,
@@ -128,20 +127,20 @@ static int custom_keyboard(
 	(void)refcon;
 	(void)losing;
 
-	log_msg("device %d: key %c (0x%02x) pressed", id, key, (int)key);
+	log_msg("device %p: key %c (0x%02x) pressed", device, key, (int)key);
 	
 	// Return 1 only if you want to intercept the key press, and don't want X-Plane's device
 	// to receive it.
 	return 0;
 }
 
-static int custom_bezel_click(XPLMDeviceID id, int x, int y, int mouse, void *refcon)
+static int custom_bezel_click(int x, int y, int mouse, void *refcon)
 {
-	log_msg("device %d: bezel click %s at (%d, %d)", id, click_type(mouse), x, y);
+	log_msg("device %p: bezel click %s at (%d, %d)", device, click_type(mouse), x, y);
 	return 0;
 }
 
-static int custom_bezel_right_click(XPLMDeviceID id, int x, int y, int mouse, void *refcon)
+static int custom_bezel_right_click(int x, int y, int mouse, void *refcon)
 {
     if(mouse != xplm_MouseUp)
     {
@@ -149,19 +148,19 @@ static int custom_bezel_right_click(XPLMDeviceID id, int x, int y, int mouse, vo
         XPLMSetAvionicsBrightness(device, brt);
         log_msg("brightness: %.2f", XPLMGetAvionicsBrightness(device));
     }
-	log_msg("device %d: bezel right click %s at (%d, %d)", id, click_type(mouse), x, y);
+	log_msg("device %p: bezel right click %s at (%d, %d)", device, click_type(mouse), x, y);
     return 1;
 }
 
-static int custom_bezel_scroll(XPLMDeviceID id, int x, int y, int wheel, int clicks, void *refcon)
+static int custom_bezel_scroll(int x, int y, int wheel, int clicks, void *refcon)
 {
-	log_msg("device %d: bezel scroll %d (%d) at (%d, %d)", id, wheel, clicks, x, y);
+	log_msg("device %p: bezel scroll %d (%d) at (%d, %d)", device, wheel, clicks, x, y);
 	return 1;
 }
 
-static int custom_screen_click(XPLMDeviceID id, int x, int y, XPLMMouseStatus mouse, void *refcon)
+static int custom_screen_click(int x, int y, XPLMMouseStatus mouse, void *refcon)
 {
-	log_msg("device %d: screen touch %s at (%d, %d)", id, click_type(mouse), x, y);
+	log_msg("device %p: screen touch %s at (%d, %d)", device, click_type(mouse), x, y);
 	clicked = mouse != xplm_MouseUp;
 	pos_x = x;
 	pos_y = y;
@@ -186,9 +185,9 @@ static int custom_screen_click(XPLMDeviceID id, int x, int y, XPLMMouseStatus mo
 	return 1;
 }
 
-static int custom_screen_right_click(XPLMDeviceID id, int x, int y, XPLMMouseStatus mouse, void *refcon)
+static int custom_screen_right_click(int x, int y, XPLMMouseStatus mouse, void *refcon)
 {
-	log_msg("device %d: screen touch %s at (%d, %d)", id, click_type(mouse), x, y);
+	log_msg("device %p: screen touch %s at (%d, %d)", device, click_type(mouse), x, y);
 	right_clicked = mouse != xplm_MouseUp;
 	right_pos_x = x;
 	right_pos_y = y;
@@ -212,13 +211,13 @@ static int custom_screen_right_click(XPLMDeviceID id, int x, int y, XPLMMouseSta
 	return 1;
 }
 
-static int custom_screen_scroll(XPLMDeviceID id, int x, int y, int wheel, int clicks, void *refcon)
+static int custom_screen_scroll(int x, int y, int wheel, int clicks, void *refcon)
 {
-	log_msg("device %d: screen scroll %d (%d) at (%d, %d)", id, wheel, clicks, x, y);
+	log_msg("device %p: screen scroll %d (%d) at (%d, %d)", device, wheel, clicks, x, y);
 	return 1;
 }
 
-static int custom_screen_cursor(XPLMDeviceID id, int x, int y, void *refcon)
+static int custom_screen_cursor(int x, int y, void *refcon)
 {
     return xplm_CursorHidden;
 }

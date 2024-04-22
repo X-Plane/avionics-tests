@@ -413,7 +413,6 @@ typedef int (* XPLMAvionicsCallback_f)(
  *
  */
 typedef int (* XPLMAvionicsMouse_f)(
-                         XPLMDeviceID         inID,
                          int                  x,
                          int                  y,
                          XPLMMouseStatus      inMouse,
@@ -434,7 +433,6 @@ typedef int (* XPLMAvionicsMouse_f)(
  *
  */
 typedef int (* XPLMAvionicsMouseWheel_f)(
-                         XPLMDeviceID         inID,
                          int                  x,
                          int                  y,
                          int                  wheel,
@@ -453,7 +451,6 @@ typedef int (* XPLMAvionicsMouseWheel_f)(
  *
  */
 typedef XPLMCursorStatus (* XPLMAvionicsCursor_f)(
-                         XPLMDeviceID         inID,
                          int                  x,
                          int                  y,
                          void *               inRefcon);
@@ -469,7 +466,6 @@ typedef XPLMCursorStatus (* XPLMAvionicsCursor_f)(
  *
  */
 typedef int (* XPLMAvionicsKeyboard_f)(
-                         XPLMDeviceID         inID,
                          char                 inKey,
                          XPLMKeyFlags         inFlags,
                          char                 inVirtualKey,
