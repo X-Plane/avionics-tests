@@ -121,8 +121,19 @@ static int stock_bezel_click(XPLMDeviceID id, int x, int y, int mouse, void *ref
 {
 	log_msg("%s: bezel click %s at (%d, %d)", device_str[id], click_type(mouse), x, y);
 	// Return 1 only if you want to intercept the key click, and don't want X-Plane's device
-	// to receive it.
+	// to receive it.    
 	return 0;
+}
+
+static int stock_bezel_right_click(XPLMDeviceID id, int x, int y, int mouse, void *refcon)
+{
+    if(mouse != xplm_MouseUp)
+    {
+        float brt = (float)y / 200.f;
+        XPLMSetAvionicsBrightness(gns530_1, brt);
+        log_msg("brightness: %.2f", XPLMGetAvionicsBrightness(gns530_1));
+    }
+    return 1;
 }
 
 static int stock_bezel_scroll(XPLMDeviceID id, int x, int y, int wheel, int clicks, void *refcon)
@@ -151,7 +162,7 @@ static XPLMCursorStatus stock_screen_cursor(XPLMDeviceID id, int x, int y, void 
     log_msg("%s: screen cursor at (%d, %d)", device_str[id], x, y);
     bool in_rect = x > 0 && x < 100 && y > 100 && y < 200;
     
-    return in_rect ? xplm_CursorHidden : xplm_CursorDefault;
+    return in_rect ? xplm_CursorHidden : xplm_CursorArrow;
 }
 
 static int stock_draw(XPLMDeviceID id, int before, void *refcon)
@@ -185,7 +196,7 @@ static int stock_draw(XPLMDeviceID id, int before, void *refcon)
 	
 	// If you return 0 in a `before` callback, X-Plane will go ahead and render
 	// the stock device's screen;
-	return before && id == xplm_device_GNS430_2;
+	return !before || id != xplm_device_GNS430_2;
 }
 
 static XPLMAvionicsID register_device(XPLMDeviceID id, XPLMAvionicsCallback_f draw)
@@ -196,6 +207,7 @@ static XPLMAvionicsID register_device(XPLMDeviceID id, XPLMAvionicsCallback_f dr
 		.drawCallbackBefore = draw,
 		.drawCallbackAfter = draw,
 		.bezelClickCallback = stock_bezel_click,
+        .bezelRightClickCallback = stock_bezel_right_click,
         .bezelScrollCallback = stock_bezel_scroll,
 		.screenTouchCallback = stock_screen_click,
         .screenCursorCallback = stock_screen_cursor,

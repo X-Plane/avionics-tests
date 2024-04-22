@@ -143,8 +143,14 @@ static int custom_bezel_click(XPLMDeviceID id, int x, int y, int mouse, void *re
 
 static int custom_bezel_right_click(XPLMDeviceID id, int x, int y, int mouse, void *refcon)
 {
+    if(mouse != xplm_MouseUp)
+    {
+        float brt = (float)y / (float)DEV_HEIGHT;
+        XPLMSetAvionicsBrightness(device, brt);
+        log_msg("brightness: %.2f", XPLMGetAvionicsBrightness(device));
+    }
 	log_msg("device %d: bezel right click %s at (%d, %d)", id, click_type(mouse), x, y);
-	return 0;
+    return 1;
 }
 
 static int custom_bezel_scroll(XPLMDeviceID id, int x, int y, int wheel, int clicks, void *refcon)
@@ -176,6 +182,7 @@ static int custom_screen_click(XPLMDeviceID id, int x, int y, XPLMMouseStatus mo
     default:
         break;
     }
+    
 	return 1;
 }
 
@@ -216,10 +223,11 @@ static int custom_screen_cursor(XPLMDeviceID id, int x, int y, void *refcon)
     return xplm_CursorHidden;
 }
 
-static int custom_bezel(XPLMDeviceID id, int before, void *refcon)
+static void custom_bezel(float r, float b, float g, void *refcon)
 {
+	XPLMSetGraphicsState(0, 0, 0, 0, 1, 1, 0);
     glBegin(GL_QUADS);
-    glColor4f(0.5, 0.5, 0.5, 1.f);
+    glColor4f(0.5 * r, 0.5 * b, 0.5 * g, 1.f);
     glVertex2f(0, 0);
     glVertex2f(0, DEV_HEIGHT);
     glVertex2f(DEV_WIDTH, DEV_HEIGHT);
@@ -231,15 +239,11 @@ static int custom_bezel(XPLMDeviceID id, int before, void *refcon)
     glVertex2f(BEZEL_SIZE+WIDTH, BEZEL_SIZE+HEIGHT);
     glVertex2f(BEZEL_SIZE+WIDTH, BEZEL_SIZE);
     glEnd();
-	
-	return 1;
 }
 
-static int custom_screen(XPLMDeviceID id, int before, void *refcon)
+static void custom_screen(void *refcon)
 {
-	(void)id;
 	(void)refcon;
-	(void)before;
 	
 	XPLMSetGraphicsState(0, 0, 0, 0, 1, 1, 0);
     glClearColor(0, 0, 0, 1);
@@ -280,10 +284,6 @@ static int custom_screen(XPLMDeviceID id, int before, void *refcon)
         float color[3] = {1.f, 0.f, 1.f};
         XPLMDrawString(color, 50, 250, buffer, NULL, xplmFont_Proportional);
     }
-	
-	// If you return 0 in a `before` callback, X-Plane will go ahead and render
-	// the stock device's screen;
-	return 1;
 }
 
 static int handle_popup(XPLMCommandRef cmd, XPLMCommandPhase phase, void *refcon)
@@ -300,8 +300,8 @@ void custom_device_init(XPLMMenuID menu)
 {
 	XPLMCreateAvionics_t av = (XPLMCreateAvionics_t){
 		.structSize = sizeof(XPLMCreateAvionics_t),
-		.width = WIDTH,
-		.height = HEIGHT,
+		.screenWidth = WIDTH,
+		.screenHeight = HEIGHT,
 		.bezelWidth = DEV_WIDTH,
 		.bezelHeight = DEV_HEIGHT,
 		.screenOffsetX = BEZEL_SIZE,
