@@ -145,8 +145,8 @@ static int custom_bezel_right_click(int x, int y, int mouse, void *refcon)
     if(mouse != xplm_MouseUp)
     {
         float brt = (float)y / (float)DEV_HEIGHT;
-        XPLMSetAvionicsBrightness(device, brt);
-        log_msg("brightness: %.2f", XPLMGetAvionicsBrightness(device));
+        XPLMSetAvionicsBrightnessSetting(device, brt);
+        log_msg("brightness: %.2f", XPLMGetAvionicsBrightnessSetting(device));
     }
 	log_msg("device %p: bezel right click %s at (%d, %d)", device, click_type(mouse), x, y);
     return 1;
@@ -226,7 +226,7 @@ static void custom_bezel(float r, float b, float g, void *refcon)
 {
 	XPLMSetGraphicsState(0, 0, 0, 0, 1, 1, 0);
     glBegin(GL_QUADS);
-    glColor4f(0.5 * r, 0.5 * b, 0.5 * g, 1.f);
+    glColor4f(0.8 * r, 0.8 * b, 0.8 * g, 1.f);
     glVertex2f(0, 0);
     glVertex2f(0, DEV_HEIGHT);
     glVertex2f(DEV_WIDTH, DEV_HEIGHT);

@@ -289,7 +289,7 @@ TYPE
    cockpit devices' pop-up windows.
    
    When working with avionics devices, all co-ordinates you receive when
-   drawing or dealing with click events are in texels. The x-axis grows left,
+   drawing or dealing with click events are in texels. The x-axis grows right,
    the y-axis grows up. In bezel callbacks, the origin is at the bottom left
    corner of the bezel. In screen callbacks, the origin is at the bottom-left
    of the screen. X-Plane takes care of scaling your screen and bezel if the
@@ -547,7 +547,7 @@ TYPE
     schedule as long as your plugin is not deactivated, or unloaded, or you
     call XPLMUnregisterAvionicsCallbacks().
     
-    Note that you cannot register new callbacks for a devie that is not a
+    Note that you cannot register new callbacks for a device that is not a
     built-in one (for example a device that you have created, or a device
     another plugin has created).
    }
@@ -744,21 +744,23 @@ TYPE
 
 {$IFDEF XPLM410}
    {
-    XPLMSetAvionicsBrightness
+    XPLMSetAvionicsBrightnessSetting
     
-    Sets the brightness ratio, between 0 and 1, for the screen of the cockpit
-    device with the given handle.
+    Sets the brightness setting's value, between 0 and 1, for the screen of the
+    cockpit device with the given handle.
     
     If the device is bound to the current aircraft, this is a shortcut to
     setting the brightness using the
-    `sim/cockpit2/electrical/instrument_brightness_ratio` dataref; this sets
+    `sim/cockpit2/switches/instrument_brightness_ratio[]` dataref; this sets
     the slot in the `instrument_brightness_ratio` array to which the device is
-    bound.
+    bound. Note that if the device is bound, failures can mean the effective
+    brightness of the device is 0 even if set to a greater value.
     
-    If the device is not currently bound, this sets the brightness ratio for
-    the device alone.
+    If the device is not currently bound, the device keeps track of its own
+    screen brightness, allowing you to control the brightness even though it
+    isn't connected to the `instrument_brightness_ratio` dataref.
    }
-   PROCEDURE XPLMSetAvionicsBrightness(
+   PROCEDURE XPLMSetAvionicsBrightnessSetting(
                                         inHandle            : XPLMAvionicsID;
                                         brightness          : Single);
     cdecl; external XPLM_DLL;
@@ -766,21 +768,23 @@ TYPE
 
 {$IFDEF XPLM410}
    {
-    XPLMGetAvionicsBrightness
+    XPLMGetAvionicsBrightnessSetting
     
-    Returns the brightness ratio, between 0 and 1, for the screen of the
-    cockpit device with the given handle.
+    Returns the brightness setting value, between 0 and 1, for the screen of
+    the cockpit device with the given handle.
     
             If the device is bound to the current aircraft, this is a shortcut
             to getting the brightness from the
             `sim/cockpit2/electrical/instrument_brightness_ratio` dataref; this
             gets the slot in the `instrument_brightness_ratio` array to which
-            the device is bound.
+            the device is bound. Note that if the device is bound, failures can
+            mean the effective brightness of the device is 0 even if set to a
+            greater value.
     
             If the device is not currently bound, this returns the brightness
             ratio for the device alone.
    }
-   FUNCTION XPLMGetAvionicsBrightness(
+   FUNCTION XPLMGetAvionicsBrightnessSetting(
                                         inHandle            : XPLMAvionicsID) : Single;
     cdecl; external XPLM_DLL;
 {$ENDIF XPLM410}

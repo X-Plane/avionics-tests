@@ -132,8 +132,8 @@ static int stock_bezel_right_click(int x, int y, int mouse, void *refcon)
     if(mouse != xplm_MouseUp)
     {
         float brt = (float)y / 200.f;
-        XPLMSetAvionicsBrightness(gns530_1, brt);
-        log_msg("brightness: %.2f", XPLMGetAvionicsBrightness(gns530_1));
+        XPLMSetAvionicsBrightnessSetting(gns530_1, brt);
+        log_msg("brightness: %.2f", XPLMGetAvionicsBrightnessSetting(gns530_1));
     }
     return 1;
 }
