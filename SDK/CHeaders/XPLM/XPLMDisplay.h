@@ -597,6 +597,7 @@ XPLM_API XPLMAvionicsID XPLMGetAvionicsHandle(
 XPLM_API void       XPLMUnregisterAvionicsCallbacks(
                          XPLMAvionicsID       inAvionicsId);
 
+#if defined(XPLM410)
 /*
  * XPLMAvionicsScreenCallback_f
  * 
@@ -613,7 +614,9 @@ XPLM_API void       XPLMUnregisterAvionicsCallbacks(
  */
 typedef void (* XPLMAvionicsScreenCallback_f)(
                          void *               inRefcon);
+#endif /* XPLM410 */
 
+#if defined(XPLM410)
 /*
  * XPLMAvionicsBezelCallback_f
  * 
@@ -634,6 +637,40 @@ typedef void (* XPLMAvionicsBezelCallback_f)(
                          float                inAmbiantG,
                          float                inAmbiantB,
                          void *               inRefcon);
+#endif /* XPLM410 */
+
+#if defined(XPLM410)
+/*
+ * XPLMAvionicsBrightness_f
+ * 
+ * This is the prototype for screen brightness callbacks for custom devices.
+ * If you provide a callback, you can return the ratio of the screen's maximum
+ * brightness that the simulator should use when displaying the screen in the
+ * 3D cockpit.
+ * 
+ * inRheoValue is the current ratio value (between 0 and 1) of the instrument
+ * brightness rheostat to which the device is bound.
+ * 
+ * inAmbientBrightness is the value (between 0 and 1) that the callback should
+ * return for the screen to be at a usable brightness based on ambient light
+ * (if your device has a photo cell and automatically adjusts its brightness,
+ * you can return this and your screen will be at the optimal brightness to be
+ * readable, but not blind the pilot).
+ * 
+ * inBusVoltsRatio is the ratio of the nominal voltage currently present on
+ * the bus to which the device is bound, or -1 if the device is not bound to
+ * the current aircraft.
+ * 
+ * Refcon is a unique value that you specify when creating the device,
+ * allowing you to slip a pointer to your own data to the callback.
+ *
+ */
+typedef float (* XPLMAvionicsBrightness_f)(
+                         float                inRheoValue,
+                         float                inAmbiantBrightness,
+                         float                inBusVoltsRatio,
+                         void *               inRefcon);
+#endif /* XPLM410 */
 
 #if defined(XPLM410)
 /*
@@ -699,6 +736,9 @@ typedef struct {
      XPLMAvionicsCursor_f      screenCursorCallback;
     /* The key callback that is called when the user types in your popup.         */
      XPLMAvionicsKeyboard_f    keyboardCallback;
+    /* The callback that is called to determine the absolute brightness of the    *
+     * device's screen. Set to NULL to use X-Plane's default behaviour.           */
+     XPLMAvionicsBrightness_f  brightnessCallback;
     /* A null-terminated string of maximum 64 characters to uniquely identify your*
      * cockpit device. This must be unique (you cannot re-use an ID that X-Plane  *
      * or another plugin provides), and it must not contain spaces. This is the   *
@@ -761,48 +801,58 @@ XPLM_API int        XPLMIsAvionicsBound(
 
 #if defined(XPLM410)
 /*
- * XPLMSetAvionicsBrightnessSetting
+ * XPLMSetAvionicsBrightnessRheo
  * 
  * Sets the brightness setting's value, between 0 and 1, for the screen of the
  * cockpit device with the given handle.
  * 
  * If the device is bound to the current aircraft, this is a shortcut to
- * setting the brightness using the
+ * setting the brightness rheostat value using the
  * `sim/cockpit2/switches/instrument_brightness_ratio[]` dataref; this sets
  * the slot in the `instrument_brightness_ratio` array to which the device is
- * bound. Note that if the device is bound, failures can mean the effective
- * brightness of the device is 0 even if set to a greater value.
+ * bound.
  * 
  * If the device is not currently bound, the device keeps track of its own
- * screen brightness, allowing you to control the brightness even though it
- * isn't connected to the `instrument_brightness_ratio` dataref.
+ * screen brightness rheostat, allowing you to control the brightness even
+ * though it isn't connected to the `instrument_brightness_ratio` dataref.
  *
  */
-XPLM_API void       XPLMSetAvionicsBrightnessSetting(
+XPLM_API void       XPLMSetAvionicsBrightnessRheo(
                          XPLMAvionicsID       inHandle,
                          float                brightness);
 #endif /* XPLM410 */
 
 #if defined(XPLM410)
 /*
- * XPLMGetAvionicsBrightnessSetting
+ * XPLMGetAvionicsBrightnessRheo
  * 
  * Returns the brightness setting value, between 0 and 1, for the screen of
  * the cockpit device with the given handle.
  * 
  *         If the device is bound to the current aircraft, this is a shortcut
- *         to getting the brightness from the
+ *         to getting the brightness rheostat value from the
  *         `sim/cockpit2/electrical/instrument_brightness_ratio` dataref; this
  *         gets the slot in the `instrument_brightness_ratio` array to which
- *         the device is bound. Note that if the device is bound, failures can
- *         mean the effective brightness of the device is 0 even if set to a
- *         greater value.
+ *         the device is bound.
  * 
- *         If the device is not currently bound, this returns the brightness
- *         ratio for the device alone.
+ *         If the device is not currently bound, this returns the device's own
+ *         brightness rheostat value.
  *
  */
-XPLM_API float      XPLMGetAvionicsBrightnessSetting(
+XPLM_API float      XPLMGetAvionicsBrightnessRheo(
+                         XPLMAvionicsID       inHandle);
+#endif /* XPLM410 */
+
+#if defined(XPLM410)
+/*
+ * XPLMGetAvionicsBusVoltsRatio
+ * 
+ * Returns the ratio of the nominal voltage (1.0 means full nominal voltage)
+ * of the electrical bus to which the given avionics device is bound, or -1 if
+ * the device is not bound to the current aircraft.
+ *
+ */
+XPLM_API float      XPLMGetAvionicsBusVoltsRatio(
                          XPLMAvionicsID       inHandle);
 #endif /* XPLM410 */
 

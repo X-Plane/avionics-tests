@@ -145,8 +145,8 @@ static int custom_bezel_right_click(int x, int y, int mouse, void *refcon)
     if(mouse != xplm_MouseUp)
     {
         float brt = (float)y / (float)DEV_HEIGHT;
-        XPLMSetAvionicsBrightnessSetting(device, brt);
-        log_msg("brightness: %.2f", XPLMGetAvionicsBrightnessSetting(device));
+        XPLMSetAvionicsBrightnessRheo(device, brt);
+        log_msg("brightness: %.2f", XPLMGetAvionicsBrightnessRheo(device));
     }
 	log_msg("device %p: bezel right click %s at (%d, %d)", device, click_type(mouse), x, y);
     return 1;
@@ -240,6 +240,16 @@ static void custom_bezel(float r, float b, float g, void *refcon)
     glEnd();
 }
 
+static float custom_brightness(float rheo, float cell, float bus, void *refcon)
+{
+    (void)refcon;
+    (void)cell;
+    log_msg("brightness: %f, %f, %f", rheo, cell, bus);
+    if(bus * 28 < 19)
+        return 0.f;
+    return rheo;
+}
+
 static void custom_screen(void *refcon)
 {
 	(void)refcon;
@@ -262,6 +272,9 @@ static void custom_screen(void *refcon)
     if(clicked)
     {
         draw_cursor(pos_x, pos_y, 1, 0, 1);
+        float volts = XPLMGetAvionicsBusVoltsRatio(device);
+        log_msg("device %p: %.f volts", device, volts);
+        
     }
     else if(hover)
     {
@@ -315,6 +328,7 @@ void custom_device_init(XPLMMenuID menu)
 		.bezelClickCallback = custom_bezel_click,
         .bezelRightClickCallback = custom_bezel_right_click,
         .bezelScrollCallback = custom_bezel_scroll,
+        .brightnessCallback = custom_brightness,
 		.keyboardCallback = custom_keyboard,
 		.deviceID = "TEST_AVIONICS",
         .deviceName = "Test Avionics 9000"
