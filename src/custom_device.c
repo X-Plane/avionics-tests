@@ -34,6 +34,7 @@ static int right_pos_x = 0, right_pos_y = 0;
 static int right_clicked = false;
 static XPLMAvionicsID device = NULL;
 static XPLMCommandRef show_popup = NULL;
+static XPLMCommandRef show_popout = NULL;
 
 typedef struct {
     int x, y, w, h;
@@ -244,8 +245,7 @@ static float custom_brightness(float rheo, float cell, float bus, void *refcon)
 {
     (void)refcon;
     (void)cell;
-    log_msg("brightness: %f, %f, %f", rheo, cell, bus);
-    if(bus * 28 < 19)
+    if(bus >= 0 && bus * 28 < 19)
         return 0.f;
     return rheo;
 }
@@ -308,6 +308,17 @@ static int handle_popup(XPLMCommandRef cmd, XPLMCommandPhase phase, void *refcon
     return 1;
 }
 
+static int handle_popout(XPLMCommandRef cmd, XPLMCommandPhase phase, void *refcon)
+{
+	(void)cmd;
+	
+    if(phase != xplm_CommandBegin)
+        return 1;
+    XPLMAvionicsID id = refcon;
+    XPLMPopOutAvionics(id);
+    return 1;
+}
+
 void custom_device_init(XPLMMenuID menu)
 {
 	XPLMCreateAvionics_t av = (XPLMCreateAvionics_t){
@@ -334,16 +345,30 @@ void custom_device_init(XPLMMenuID menu)
         .deviceName = "Test Avionics 9000"
 	};
 	device = XPLMCreateAvionicsEx(&av);
+    
+    if(!device) {
+        log_msg("cannot create custom avionics device");
+    } else {
+        log_msg("Custom device %s", av.deviceID);
+    }
 	
 	show_popup = XPLMCreateCommand("laminar/avionics_test/show_popup", "Show Test Avionics Popup");
 	XPLMRegisterCommandHandler(show_popup, handle_popup, 1, device);
+    
+	show_popout = XPLMCreateCommand("laminar/avionics_test/show_popout", "Show Test Avionics Popout");
+	XPLMRegisterCommandHandler(show_popout, handle_popout, 1, device);
 	
 	if(menu)
-		XPLMAppendMenuItemWithCommand(menu, "Open Test Device Popup", show_popup);
+    {
+        XPLMAppendMenuItemWithCommand(menu, "Open Test Device Popup", show_popup);
+        XPLMAppendMenuItemWithCommand(menu, "Open Test Device Popout", show_popout);
+    }
+		
 }
 
 void custom_device_fini()
 {
 	XPLMUnregisterCommandHandler(show_popup, handle_popup, 1, device);
+	XPLMUnregisterCommandHandler(show_popout, handle_popout, 1, device);
 	XPLMDestroyAvionics(device);
 }

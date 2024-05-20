@@ -27,6 +27,7 @@ static int clicked = false;
 static XPLMAvionicsID gns530_1 = NULL;
 static XPLMAvionicsID gns430_2 = NULL;
 static XPLMAvionicsID cdu_1 = NULL;
+static XPLMCommandRef show_popout = NULL;
 
 static XPLMMenuID devices_menu = NULL;
 static int devices_menu_item = -1;
@@ -258,6 +259,17 @@ static void create_menus(XPLMMenuID parent)
     }
 }
 
+static int handle_530_popup(XPLMCommandRef cmd, XPLMCommandPhase phase, void *refcon)
+{
+	(void)cmd;
+	
+    if(phase != xplm_CommandBegin)
+        return 1;
+    XPLMAvionicsID id = refcon;
+    XPLMPopOutAvionics(id);
+    return 1;
+}
+
 void stock_overrides_init(XPLMMenuID menu)
 {
 	gns530_1 = register_device(xplm_device_GNS530_1, stock_draw);
@@ -265,10 +277,17 @@ void stock_overrides_init(XPLMMenuID menu)
 	cdu_1 = register_device(xplm_device_CDU739_1, NULL);
     
     create_menus(menu);
+    
+	show_popout = XPLMCreateCommand("laminar/avionics_test/show_530_popout", "Show GNS 530 Popout");
+	XPLMRegisterCommandHandler(show_popout, handle_530_popup, 1, gns530_1);
+	
+	if(menu)
+		XPLMAppendMenuItemWithCommand(menu, "Open GNS 530 Popout", show_popout);
 }
 
 void stock_overrides_fini()
 {
+	XPLMUnregisterCommandHandler(show_popout, handle_530_popup, 1, gns530_1);
     XPLMClearAllMenuItems(devices_menu);
     XPLMDestroyMenu(devices_menu);
     devices_menu = NULL;
