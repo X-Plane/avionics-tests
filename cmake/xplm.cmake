@@ -104,8 +104,13 @@ function(find_xplane_sdk SDK_ROOT SDK_VERSION)
             INTERFACE -DXPLM200=1 -DXPLM210=1 -DXPLM300=1 -DXPLM301=1  -DXPLM302=1 -DXPLM303=1 -DXPLM400=1 -DXPLM410=1)
         target_compile_definitions(xpwidgets
             INTERFACE -DXPLM200=1 -DXPLM210=1 -DXPLM300=1 -DXPLM301=1  -DXPLM302=1 -DXPLM303=1 -DXPLM400=1 -DXPLM410=1)
+    elseif(SDK_VERSION EQUAL 411)
+        target_compile_definitions(xplm
+            INTERFACE -DXPLM200=1 -DXPLM210=1 -DXPLM300=1 -DXPLM301=1  -DXPLM302=1 -DXPLM303=1 -DXPLM400=1 -DXPLM410=1 -DXPLM411=1)
+        target_compile_definitions(xpwidgets
+            INTERFACE -DXPLM200=1 -DXPLM210=1 -DXPLM300=1 -DXPLM301=1  -DXPLM302=1 -DXPLM303=1 -DXPLM400=1 -DXPLM410=1 -DXPLM411=1)
     else()
-        message(FATAL_ERROR "Library version one of: 300, 301, 302, 303, 400")
+        message(FATAL_ERROR "Library version one of: 300, 301, 302, 303, 400, 410, 411")
     endif()
     
     target_include_directories(xplm INTERFACE "${SDK_ROOT}/CHeaders/XPLM")

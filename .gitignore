@@ -4,3 +4,4 @@ build
 *.xpl
 *.zip
 syms.txt
+/avionics/win_x64/Debug/avionics.xpl.pdb

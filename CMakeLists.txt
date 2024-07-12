@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(SDK_ROOT "${PROJECT_SOURCE_DIR}/SDK")
 
 use_static_libc()
-find_xplane_sdk(${SDK_ROOT} 410)
+find_xplane_sdk(${SDK_ROOT} 411)
 find_package(OpenGL REQUIRED)
 
 add_xplane_plugin(avionics

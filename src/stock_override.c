@@ -14,6 +14,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include "SystemGL.h"
 
 void log_msg(const char *fmt, ...);
@@ -173,23 +175,39 @@ static XPLMCursorStatus stock_screen_cursor(int x, int y, void *refcon) {
 
 static int stock_draw(XPLMDeviceID id, int before, void *refcon)
 {
-	(void)id;
 	(void)refcon;
 	
 	int x = before ? 0 : 100;
 	int y = before ? 100 : 0;
 	
-	XPLMSetGraphicsState(0, 0, 0, 0, 0, 0, 0);
-	
+#if XPLM411
+    auto gtex = XPLMGetTexture(xplm_Tex_Radar_Pilot);           // This is the pilot side radar, if the airplane has it installed. If the acf doesn't have it, this returns 0.
+    if (gtex > 0 && id == xplm_device_GNS530_1 && !before)      // Let's draw the radar onto the 530!
+    {
+        XPLMSetGraphicsState(0, 1, 0, 0, 1, 0, 0);
+        XPLMBindTexture2d(gtex, 0);                             // Bind the non-null texture that we got for the radar
+        glBegin(GL_QUADS);
+        glColor3f(1.f, 1.f, 1.f);
+        glTexCoord2f(0, 0); glVertex2f(0,  0);
+        glTexCoord2f(0, 1); glVertex2f(0,  520.f/M_SQRT2);      // The radar texture is an A-landscape, so it's sqrt(2) times as wide as it is high.
+        glTexCoord2f(1, 1); glVertex2f(520,520.f/M_SQRT2);      // or, to put it here on a surface of known width, it is 1/sqrt(2) times as high as it is wide.
+        glTexCoord2f(1, 0); glVertex2f(520,0);
+        glEnd();
+        return 1;
+    }
+#endif
+
+    XPLMSetGraphicsState(0, 0, 0, 0, 0, 0, 0);
+
 	glBegin(GL_QUADS);
 	if(before)
 		glColor3f(1.f, 0.f, 1.f);
 	else
 		glColor3f(0.f, 1.f, 1.f);
-	glVertex2f(x, 		y);
-	glVertex2f(x, 		y+100);
-	glVertex2f(x+100, 	y+100);
-	glVertex2f(x+100, 	y);
+    glVertex2f(x, 		y);
+    glVertex2f(x, 		y+100);
+    glVertex2f(x+100, 	y+100);
+    glVertex2f(x+100, 	y);
 	glEnd();
 	
 	if(!before && id == xplm_device_GNS530_1 && clicked)
@@ -200,7 +218,7 @@ static int stock_draw(XPLMDeviceID id, int before, void *refcon)
 		XPLMDrawString(color, 0, 300, buffer, NULL, xplmFont_Proportional);
 	}
 	
-	// If you return 0 in a `before` callback, X-Plane will go ahead and render
+	// If you return 1 in a `before` callback, X-Plane will go ahead and render
 	// the stock device's screen;
 	return !before || id != xplm_device_GNS430_2;
 }

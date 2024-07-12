@@ -82,6 +82,18 @@ enum {
     xplm_Tex_AircraftLiteMap                 = 2,
 
 #endif /* XPLM_DEPRECATED */
+#if defined(XPLM411)
+    /* The weather radar instrument texture as controlled by the pilot-side radar *
+     * controls                                                                   */
+    xplm_Tex_Radar_Pilot                     = 3,
+
+#endif /* XPLM411 */
+#if defined(XPLM411)
+    /*         The weather radar instrument texture as controlled by the          *
+     *         copilot-side radar controls                                        */
+    xplm_Tex_Radar_Copilot                   = 4,
+
+#endif /* XPLM411 */
 
 };
 typedef int XPLMTextureID;
@@ -177,18 +189,16 @@ XPLM_API void       XPLMGenerateTextureNumbers(
                          int *                outTextureIDs,
                          int                  inCount);
 
-#if defined(XPLM_DEPRECATED)
 /*
  * XPLMGetTexture
  * 
  * XPLMGetTexture returns the OpenGL texture ID of an X-Plane texture based on
  * a generic identifying code.  For example, you can get the texture for
- * X-Plane's UI bitmaps.
+ * X-Plane's  weather radar.
  *
  */
 XPLM_API int        XPLMGetTexture(
                          XPLMTextureID        inTexture);
-#endif /* XPLM_DEPRECATED */
 
 /*
  * XPLMWorldToLocal
