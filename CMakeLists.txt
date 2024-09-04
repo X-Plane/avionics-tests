@@ -8,6 +8,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(SDK_ROOT "${PROJECT_SOURCE_DIR}/SDK")
 
+if(APPLE)
+	set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Build architectures for Mac OS X" FORCE)
+	set(CMAKE_OSX_DEPLOYMENT_TARGET "10.13" CACHE STRING "Minimum macOS version" FORCE)
+endif()
+
 use_static_libc()
 find_xplane_sdk(${SDK_ROOT} 411)
 find_package(OpenGL REQUIRED)

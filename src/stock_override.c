@@ -181,7 +181,7 @@ static int stock_draw(XPLMDeviceID id, int before, void *refcon)
 	int y = before ? 100 : 0;
 	
 #if XPLM411
-    auto gtex = XPLMGetTexture(xplm_Tex_Radar_Pilot);           // This is the pilot side radar, if the airplane has it installed. If the acf doesn't have it, this returns 0.
+    GLuint gtex = XPLMGetTexture(xplm_Tex_Radar_Pilot);           // This is the pilot side radar, if the airplane has it installed. If the acf doesn't have it, this returns 0.
     if (gtex > 0 && id == xplm_device_GNS530_1 && !before)      // Let's draw the radar onto the 530!
     {
         XPLMSetGraphicsState(0, 1, 0, 0, 1, 0, 0);
